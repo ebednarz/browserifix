@@ -12,6 +12,6 @@
     "url": "https://github.com/ebednarz/browserifix.git"
   },
   "dependencies": {
-    "browserifix": "0.0.4"
+    "browserifix": "0.0.5"
   }
 }
