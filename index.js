@@ -2,15 +2,15 @@
 var browserify = require('browserify');
 var exorcist = require('exorcist');
 var fs = require('fs');
-var getBundleName = require('./get-bundle-name');
+var getBundleName = require('./library/get-bundle-name');
 var glob = require('glob');
-var lint = require('./lint');
+var lint = require('./library/lint');
 var lodash = require('lodash');
-var log = require('./log');
+var log = require('./library/log');
 var mkdirp = require('mkdirp');
 var path = require('path');
-var packageData = require('../package');
-var uncomment = require('./uncomment');
+var packageData = require('./package');
+var uncomment = require('./library/uncomment');
 
 var bundles;
 var source;
@@ -120,7 +120,7 @@ function browserifix(options) {
         });
 
     if (options.watch) {
-        watch = require('./watch');
+        watch = require('./library/watch');
         watch(source, bundles);
     }
 }

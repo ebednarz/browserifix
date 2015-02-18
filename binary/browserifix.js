@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-var browserifix = require('../library');
+var browserifix = require('..');
 var minimist = require('minimist');
 var reverseConfig = require('reverse-config');
 

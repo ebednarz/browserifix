@@ -1,0 +1,40 @@
+{
+  "name": "browserifix-examples",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Browserifix examples",
+  "scripts": {
+    "js": "browserifix",
+    "js:dev": "browserifix --watch"
+  },
+  "config": {
+    "browserifix": {
+      "bundles": {
+        "beep": {
+          "require": [
+            "./source/beep/module/foo",
+            {
+              "file": "./source/beep/module/bar",
+              "expose": "bar"
+            }
+          ]
+        },
+        "boop": {
+          "external": [
+            "../beep/module/foo",
+            "bar"
+          ]
+        }
+      },
+      "source": "./source",
+      "target": "./target"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ebednarz/browserifix.git"
+  },
+  "dependencies": {
+    "browserifix": "0.0.4"
+  }
+}
