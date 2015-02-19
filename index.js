@@ -10,6 +10,7 @@ var log = require('./library/log');
 var mkdirp = require('mkdirp');
 var path = require('path');
 var packageData = require('./package');
+var q = require('q');
 var uncomment = require('./library/uncomment');
 
 var bundles;
@@ -39,8 +40,10 @@ function getWriteStream(id) {
 /**
  * @param {Object} value
  * @param {string} key
+ * @param {Object} errors
+ * @param {Object} deferred
  */
-function initialize(value, key) {
+function initialize(value, key, errors, deferred) {
     var bundle;
     var mapFile = key + '-map.json';
     var mapPath = path.join(target, mapFile);
@@ -56,6 +59,7 @@ function initialize(value, key) {
             var endTime = new Date();
             var performance = (+endTime - startTime) + ' ms';
             log([action, [key, 'magenta'], 'bundle in', performance]);
+            deferred.resolve();
         }
 
         bundle
@@ -76,7 +80,7 @@ function initialize(value, key) {
         .add(getIndex(key));
     bundles[key] = build;
 
-    if (this.errors[key]) {
+    if (errors[key]) {
         log(['aborted', [key, 'magenta'], 'bundle']);
     } else {
         build('created');
@@ -85,9 +89,11 @@ function initialize(value, key) {
 
 /**
  * @param {Object} options
+ * @param {Function} [done]
  */
-function browserifix(options) {
+function browserifix(options, done) {
     var errors = {};
+    var queue = [];
     var watch;
 
     /**
@@ -115,9 +121,15 @@ function browserifix(options) {
         })
         .forEach(forEachFile);
     lodash
-        .forIn(options.bundles, initialize, {
-            errors: errors
+        .forIn(options.bundles, function (value, key) {
+            var deferred = q.defer();
+            queue.push(deferred.promise);
+            initialize(value, key, errors, deferred);
         });
+
+    if (done) {
+        q.all(queue).done(done);
+    }
 
     if (options.watch) {
         watch = require('./library/watch');

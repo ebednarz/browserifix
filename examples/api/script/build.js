@@ -1,5 +1,9 @@
 var browserifix = require('browserifix');
 
+function callback() {
+    console.log('Done');
+}
+
 browserifix({
     bundles: {
         beep: {
@@ -21,4 +25,4 @@ browserifix({
     source: './source',
     target: './target',
     watch: false
-});
+}, callback);
