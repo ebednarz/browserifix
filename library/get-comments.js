@@ -18,6 +18,10 @@ function getComments(code) {
     function processNode(node) {
         endpos = Math.max(node.end.endpos, endpos);
 
+        if (node.start.comments_before.length) {
+            node.start.comments_before.forEach(iterate);
+        }
+
         if (node.end.comments_before.length) {
             node.end.comments_before.forEach(iterate);
         }
