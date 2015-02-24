@@ -26,7 +26,7 @@ function spliceString(input, start, end, trim) {
  * @param {Function} next
  */
 function setBuffer(buffer, encoding, next) {
-    var input = buffer.toString('utf8');
+    var input = buffer.toString('utf8').replace(/\r\n/g, '\n');
     var comments = getComments(input);
     var length = comments.length;
     var comment;
