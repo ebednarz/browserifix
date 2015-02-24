@@ -51,8 +51,9 @@ function initialize(value, key, errors, deferred) {
     function build(action, errors) {
         var startTime = +(new Date());
 
-        function onError() {
-            // Keep the process alive; error messages come from JSHint.
+        function onError(error) {
+            log([[error.message, 'red']]);
+            deferred.reject();
         }
 
         function onFinish() {
