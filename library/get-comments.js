@@ -32,7 +32,7 @@ function getComments(code) {
     }
 
     try {
-        ast = uglifyJs.parse(code)
+        ast = uglifyJs.parse(code);
     } catch (error) {
         return comments;
     }

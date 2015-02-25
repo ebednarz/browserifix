@@ -1,5 +1,6 @@
 'use strict';
 var browserify = require('browserify');
+var defaults = require('./library/defaults');
 var exorcist = require('exorcist');
 var fs = require('fs');
 var getBundleName = require('./library/get-bundle-name');
@@ -7,10 +8,13 @@ var glob = require('glob');
 var lint = require('./library/lint');
 var lodash = require('lodash');
 var log = require('./library/log');
+var minify = require('./library/minify');
 var mkdirp = require('mkdirp');
 var path = require('path');
 var packageData = require('./package');
 var q = require('q');
+var reverseConfig = require('reverse-config');
+var sourcemapFilename = require('sourcemap-filename');
 var uncomment = require('./library/uncomment');
 
 var bundles;
@@ -22,7 +26,7 @@ var target;
  */
 function getIndex(id) {
     var index;
-    index = path.resolve(path.join(source, id, 'index.js'));
+    index = path.resolve(path.join(source, (id + '.js')));
     return index;
 }
 
@@ -43,9 +47,9 @@ function getWriteStream(id) {
  * @param {Object} errors
  * @param {Object} deferred
  */
-function initialize(value, key, errors, deferred) {
+function initialize(value, key, errors, deferred, pattern) {
     var bundle;
-    var mapFile = key + '-map.json';
+    var mapFile = sourcemapFilename(key + '.js', pattern);
     var mapPath = path.join(target, mapFile);
 
     function build(action, errors) {
@@ -78,6 +82,9 @@ function initialize(value, key, errors, deferred) {
         .require(value.require || [])
         .external(value.external || [])
         .transform(uncomment)
+        .transform({
+            global: true
+        }, minify)
         .add(getIndex(key));
     bundles[key] = build;
 
@@ -90,9 +97,9 @@ function initialize(value, key, errors, deferred) {
 
 /**
  * @param {Object} options
- * @param {Function} [done]
  */
-function browserifix(options, done) {
+function browserifix(options) {
+    var config;
     var errors = {};
     var queue = [];
     var watch;
@@ -111,8 +118,15 @@ function browserifix(options, done) {
         errors[bundle] += lint(filePath, true);
     }
 
-    source = options.source;
-    target = options.target;
+    config = lodash.merge(
+        {},
+        defaults,
+        reverseConfig[packageData.name],
+        options
+    );
+
+    source = config.source;
+    target = config.target;
     mkdirp.sync(target);
     bundles = {};
     log(['started', packageData.name, packageData.version]);
@@ -122,17 +136,17 @@ function browserifix(options, done) {
         })
         .forEach(forEachFile);
     lodash
-        .forIn(options.bundles, function (value, key) {
+        .forIn(config.bundles, function (value, key) {
             var deferred = q.defer();
             queue.push(deferred.promise);
-            initialize(value, key, errors, deferred);
+            initialize(value, key, errors, deferred, config.pattern);
         });
 
-    if (done) {
-        q.all(queue).done(done);
+    if (config.done) {
+        q.all(queue).done(config.done);
     }
 
-    if (options.watch) {
+    if (config.watch) {
         watch = require('./library/watch');
         watch(source, bundles);
     }
