@@ -6,9 +6,6 @@ var path = require('path');
 var through2 = require('through2');
 
 var MAGIC_NUMBER = 7;
-var globals = {
-    console: false
-};
 
 function bufferFactory(file, bundle) {
     function setBuffer(buffer, encoding, next) {
@@ -19,7 +16,7 @@ function bufferFactory(file, bundle) {
             lintrc.devel = false;
         }
 
-        jshint(source, lintrc, globals);
+        jshint(source, lintrc);
 
         if (jshint.errors.length) {
             log(['errored', [file, 'cyan']]);
@@ -34,7 +31,7 @@ function bufferFactory(file, bundle) {
                 log([location, [error.reason, 'red']]);
             });
 
-            log(['aborted', [bundle, 'magenta'], 'bundle']);
+            log(['aborted', [options.bundle, 'magenta'], 'bundle']);
             this.emit('error', {
                 message: 'JSHint error'
             });
@@ -50,7 +47,7 @@ function bufferFactory(file, bundle) {
 function lint(modulePath, options) {
     var stream;
     var filePath = path.relative(process.cwd(), modulePath);
-    stream = through2(bufferFactory(filePath, options.bundle));
+    stream = through2(bufferFactory(filePath, options));
     return stream;
 }
 
