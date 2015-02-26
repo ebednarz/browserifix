@@ -30,6 +30,7 @@ function getIndex(id) {
 
 /**
  * @param {string} id
+ * @returns {Object}
  */
 function getWriteStream(id) {
     var fileName;
@@ -99,7 +100,6 @@ function initialize(value, key, deferred, pattern) {
  */
 function browserifix(options) {
     var config;
-    var errors = {};
     var queue = [];
     var watch;
 
