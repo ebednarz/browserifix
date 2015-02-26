@@ -1,4 +1,5 @@
 'use strict';
+var path = require('path');
 
 /**
  * @param {string} path
@@ -16,6 +17,7 @@ function strip(path) {
  */
 function getBundleName(filePath, source) {
     var bundleName;
+    var extension;
     var index;
     filePath = strip(filePath);
 
@@ -26,6 +28,8 @@ function getBundleName(filePath, source) {
     }
 
     bundleName = filePath.split('/')[0];
+    extension = path.extname(bundleName);
+    bundleName = path.basename(bundleName, extension);
     return bundleName;
 }
 

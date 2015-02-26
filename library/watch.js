@@ -39,7 +39,7 @@ function watch(source, bundles) {
             if (isReady) {
                 log([action, [filePath, 'cyan']]);
 
-                if (hasContent(action) && lint(filePath)) {
+                if (!hasContent(action)) {
                     return;
                 }
 

@@ -3,8 +3,6 @@ var browserify = require('browserify');
 var defaults = require('./library/defaults');
 var exorcist = require('exorcist');
 var fs = require('fs');
-var getBundleName = require('./library/get-bundle-name');
-var glob = require('glob');
 var lint = require('./library/lint');
 var lodash = require('lodash');
 var log = require('./library/log');
@@ -44,20 +42,22 @@ function getWriteStream(id) {
 /**
  * @param {Object} value
  * @param {string} key
- * @param {Object} errors
  * @param {Object} deferred
  * @param {string} pattern
  */
-function initialize(value, key, errors, deferred, pattern) {
+function initialize(value, key, deferred, pattern) {
     var bundle;
     var mapFile = sourcemapFilename(key + '.js', pattern);
     var mapPath = path.join(target, mapFile);
 
-    function build(action, errors) {
+    function build(action) {
         var startTime = +(new Date());
 
         function onError(error) {
-            log([[error.message, 'red']]);
+            if (0 !== error.message.indexOf('JSHint')) {
+                log([[error.message, 'red']]);
+            }
+
             deferred.reject();
         }
 
@@ -82,18 +82,16 @@ function initialize(value, key, errors, deferred, pattern) {
     bundle
         .require(value.require || [])
         .external(value.external || [])
+        .transform(lint, {
+            bundle: key
+        })
         .transform(uncomment)
         .transform({
             global: true
         }, minify)
         .add(getIndex(key));
     bundles[key] = build;
-
-    if (errors[key]) {
-        log(['aborted', [key, 'magenta'], 'bundle']);
-    } else {
-        build('created');
-    }
+    build('created');
 }
 
 /**
@@ -105,36 +103,17 @@ function browserifix(options) {
     var queue = [];
     var watch;
 
-    /**
-     * @param {string} file
-     */
-    function forEachFile(file) {
-        var filePath = path.join(source, file);
-        var bundle = getBundleName(file);
-
-        if (!errors.hasOwnProperty(bundle)) {
-            errors[bundle] = 0;
-        }
-
-        errors[bundle] += lint(filePath, true);
-    }
-
     config = mergeConfig(defaults, options);
     source = config.source;
     target = config.target;
     mkdirp.sync(target);
     bundles = {};
     log(['started', packageData.name, packageData.version]);
-    glob
-        .sync('**/*.js', {
-            cwd: source
-        })
-        .forEach(forEachFile);
     lodash
         .forIn(config.bundles, function (value, key) {
             var deferred = q.defer();
             queue.push(deferred.promise);
-            initialize(value, key, errors, deferred, config.pattern);
+            initialize(value, key, deferred, config.pattern);
         });
 
     if (config.done) {
