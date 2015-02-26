@@ -7,7 +7,7 @@ var through2 = require('through2');
 
 var MAGIC_NUMBER = 7;
 
-function bufferFactory(file, bundle) {
+function bufferFactory(file, options) {
     function setBuffer(buffer, encoding, next) {
         var source = buffer.toString('utf8');
 
@@ -45,9 +45,8 @@ function bufferFactory(file, bundle) {
 }
 
 function lint(modulePath, options) {
-    var stream;
     var filePath = path.relative(process.cwd(), modulePath);
-    stream = through2(bufferFactory(filePath, options));
+    var stream = through2(bufferFactory(filePath, options));
     return stream;
 }
 
