@@ -1,45 +1,45 @@
 'use strict';
 var reverseConfig = require('reverse-config');
+var packageName = require('../package').name;
 
-function merge(options, defaults) {
-    var result;
+function matchType(candidate, reference, key) {
+    var referenceValue = (reference.hasOwnProperty(key) && reference[key]);
 
-    function iterate(key) {
-        var value;
-
-        if (options.hasOwnProperty(key)) {
-            value = options[key];
-
-            if (defaults[key].constructor !== value.constructor) {
-                throw new TypeError('Bad option type: ' + key);
-            }
-
-            config[key] = options;
+    if (referenceValue) {
+        if (candidate[key].constructor !== referenceValue.constructor) {
+            throw new TypeError('Bad type: `' + key + '`');
         }
     }
-
-    Object.keys(defaults).forEach(iterate);
-    return result;
 }
 
-function mergeConfig(options, defaults) {
-    var config = JSON.parse(JSON.stringify(options || {}));
+function mergeConfig(defaults, options) {
+    var config = JSON.parse(JSON.stringify(defaults));
+    var moduleConfig = reverseConfig[packageName];
 
-    function iterate(key) {
-        var value;
-
-        if (options.hasOwnProperty(key)) {
-            value = options[key];
-
-            if (defaults[key].constructor !== value.constructor) {
-                throw new TypeError('Bad option type: ' + key);
-            }
-
-            config[key] = options;
-        }
+    function setConfig(key) {
+        matchType(moduleConfig, defaults, key);
+        config[key] = moduleConfig[key];
     }
 
-    Object.keys(defaults).forEach(iterate);
+    function setOption(key) {
+        // runtime options can't overwrite package config options
+        if (moduleConfig.hasOwnProperty(key)) {
+            throw new Error('Refusing to overwrite `' + key + '`');
+        }
+
+        matchType(options, defaults, key);
+        config[key] = options[key];
+    }
+
+    if (moduleConfig) {
+        Object.keys(moduleConfig).forEach(setConfig);
+    }
+
+    if (options) {
+        Object.keys(options).forEach(setOption);
+    }
+
+    return config;
 }
 
 module.exports = mergeConfig;

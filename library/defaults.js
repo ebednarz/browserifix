@@ -1,11 +1,11 @@
 'use strict';
 
-var defaults = {
+module.exports = {
     app: '_app',
-    bundles: [],
+    bundles: {
+        main: {}
+    },
     map: '',
     source: './source/script',
     target: './target/script'
 };
-
-exports.defaults = defaults;

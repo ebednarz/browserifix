@@ -8,12 +8,12 @@ var glob = require('glob');
 var lint = require('./library/lint');
 var lodash = require('lodash');
 var log = require('./library/log');
+var mergeConfig = require('./library/merge-config');
 var minify = require('./library/minify');
 var mkdirp = require('mkdirp');
 var path = require('path');
 var packageData = require('./package');
 var q = require('q');
-var reverseConfig = require('reverse-config');
 var sourcemapFilename = require('sourcemap-filename');
 var uncomment = require('./library/uncomment');
 
@@ -46,6 +46,7 @@ function getWriteStream(id) {
  * @param {string} key
  * @param {Object} errors
  * @param {Object} deferred
+ * @param {string} pattern
  */
 function initialize(value, key, errors, deferred, pattern) {
     var bundle;
@@ -118,13 +119,7 @@ function browserifix(options) {
         errors[bundle] += lint(filePath, true);
     }
 
-    config = lodash.merge(
-        {},
-        defaults,
-        reverseConfig[packageData.name],
-        options
-    );
-
+    config = mergeConfig(defaults, options);
     source = config.source;
     target = config.target;
     mkdirp.sync(target);
