@@ -1,12 +1,9 @@
 {
   "name": "browserifix",
   "version": "0.0.13",
-  "description": "Browser scripting quick-start kit",
   "author": "Eric Bednarz <github@bednarz.nl>",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:ebednarz/browserifix.git"
-  },
+  "license": "MIT",
+  "description": "Browser scripting quick-start kit",
   "keywords": [
     "browser",
     "browserify",
@@ -14,8 +11,11 @@
     "modules",
     "sourcemap"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ebednarz/browserifix.git"
+  },
   "bin": "./binary/browserifix.js",
-  "license": "MIT",
   "dependencies": {
     "browserify": "^8.1.3",
     "chalk": "^0.5.1",
@@ -23,6 +23,7 @@
     "exorcist": "^0.1.6",
     "glob": "^4.3.5",
     "jshint": "^2.6.0",
+    "lintify": "0.0.1",
     "lodash": "^2.4.1",
     "minimist": "^1.1.0",
     "mkdirp": "^0.5.0",

@@ -1,7 +1,6 @@
 'use strict';
 var chokidar = require('chokidar');
 var getBundleName = require('./get-bundle-name');
-var lint = require('./lint');
 var log = require('./log');
 
 /**

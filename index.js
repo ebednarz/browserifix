@@ -3,7 +3,6 @@ var browserify = require('browserify');
 var defaults = require('./library/defaults');
 var exorcist = require('exorcist');
 var fs = require('fs');
-var lint = require('./library/lint');
 var lodash = require('lodash');
 var log = require('./library/log');
 var mergeConfig = require('./library/merge-config');
@@ -15,6 +14,7 @@ var q = require('q');
 var sourcemapFilename = require('sourcemap-filename');
 var uncomment = require('./library/uncomment');
 
+var MAGIC_NUMBER = 7;
 var bundles;
 var source;
 var target;
@@ -83,8 +83,24 @@ function initialize(value, key, deferred, pattern) {
     bundle
         .require(value.require || [])
         .external(value.external || [])
-        .transform(lint, {
-            bundle: key
+        .transform('lintify', {
+            errors: {
+                head: function (file) {
+                    log(['errored', [file, 'cyan']]);
+                },
+                each: function (position, reason) {
+                    while (position.length < MAGIC_NUMBER) {
+                        position = ' ' + position;
+                    }
+
+                    log([position, [reason, 'red']]);
+                },
+                tail: function () {
+                    log(['aborted', [key, 'magenta'], 'bundle']);
+                },
+                message: 'JSHint Error'
+            },
+            lintrc: require('./library/lintrc')
         })
         .transform(uncomment)
         .transform({
