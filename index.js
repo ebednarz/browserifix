@@ -12,7 +12,6 @@ var path = require('path');
 var packageData = require('./package');
 var q = require('q');
 var sourcemapFilename = require('sourcemap-filename');
-var uncomment = require('./library/uncomment');
 
 var MAGIC_NUMBER = 7;
 var bundles;
@@ -102,7 +101,7 @@ function initialize(value, key, deferred, pattern) {
             },
             lintrc: require('./library/lintrc')
         })
-        .transform(uncomment)
+        .transform('nocommentify')
         .transform({
             global: true
         }, minify)

@@ -27,6 +27,7 @@
     "lodash": "^2.4.1",
     "minimist": "^1.1.0",
     "mkdirp": "^0.5.0",
+    "nocommentify": "0.0.1",
     "petty-print": "0.0.1",
     "q": "^1.1.2",
     "reverse-config": "0.0.3",

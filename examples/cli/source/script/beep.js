@@ -1,3 +1,9 @@
+/**
+ * JSDoc
+ */
 require('domready')(function () {
-    require('_app/foo')();
+    // line comment
+    require('_app/foo')(); // out of place comment
 });
+
+// trailing comment
