@@ -1,4 +1,4 @@
-# Browserifix [![dependencies](https://david-dm.org/ebednarz/browserifix.svg)](https://david-dm.org/ebednarz/browserifix)
+# Browserifix [![npm version][npm-image]][npm-url] [![npm dependencies][david-image]][david-url]
 
 > Browser scripting quick-start kit.
 
@@ -38,3 +38,8 @@ on that page.
 ## License
 
 MIT
+
+[david-image]: https://img.shields.io/david/ebednarz/browserifix.svg?style=flat-square
+[david-url]: https://www.npmjs.com/package/browserifix
+[npm-image]: https://img.shields.io/npm/v/browserifix.svg?style=flat-square
+[npm-url]: https://www.npmjs.com/package/browserifix
