@@ -1,6 +1,5 @@
 'use strict';
 var browserify = require('browserify');
-var defaults = require('./library/defaults');
 var exorcist = require('exorcist');
 var fs = require('fs');
 var lodash = require('lodash');
@@ -99,7 +98,7 @@ function initialize(value, key, deferred, pattern) {
                 },
                 message: 'JSHint Error'
             },
-            lintrc: require('./library/lintrc')
+            lintrc: require('./data/lintrc')
         })
         .transform('nocommentify')
         .transform('minstallify', {
@@ -118,7 +117,7 @@ function browserifix(options) {
     var queue = [];
     var watch;
 
-    config = mergeConfig(defaults, options);
+    config = mergeConfig(require('./data/defaults'), options);
     source = config.source;
     target = config.target;
     mkdirp.sync(target);
