@@ -1,4 +1,4 @@
-# Browserifix
+# Browserifix [![dependencies](https://david-dm.org/ebednarz/browserifix.svg)](https://david-dm.org/ebednarz/browserifix)
 
 > Browser scripting quick-start kit.
 
