@@ -6,7 +6,7 @@ var fs = require('fs');
 var lodash = require('lodash');
 var log = require('./library/log');
 var mergeConfig = require('./library/merge-config');
-var minify = require('./library/minify');
+var minstallify = require('minstallify');
 var mkdirp = require('mkdirp');
 var path = require('path');
 var packageData = require('./package');
@@ -102,9 +102,9 @@ function initialize(value, key, deferred, pattern) {
             lintrc: require('./library/lintrc')
         })
         .transform('nocommentify')
-        .transform({
+        .transform('minstallify', {
             global: true
-        }, minify)
+        })
         .add(getIndex(key));
     bundles[key] = build;
     build('created');
