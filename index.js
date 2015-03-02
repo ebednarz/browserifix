@@ -54,7 +54,7 @@ function initialize(value, key, deferred, pattern) {
 
         function onError(error) {
             if (0 !== error.message.indexOf('JSHint')) {
-                log([[error.message, 'red']]);
+                console.log(error.stack);
             }
 
             deferred.reject();
@@ -136,7 +136,7 @@ function browserifix(options) {
 
     if (config.watch) {
         watch = require('./library/watch');
-        watch(source, bundles);
+        watch(source, bundles, config.app);
     }
 }
 

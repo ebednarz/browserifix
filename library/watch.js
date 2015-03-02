@@ -1,7 +1,7 @@
 'use strict';
 var chokidar = require('chokidar');
-var getBundleName = require('./get-bundle-name');
 var log = require('./log');
+var path = require('path');
 
 /**
  * @param {string} action
@@ -20,8 +20,9 @@ function hasContent(action) {
 /**
  * @param {string} source
  * @param {Object} bundles
+ * @param {string} app
  */
-function watch(source, bundles) {
+function watch(source, bundles, app) {
     var isReady;
 
     /**
@@ -33,7 +34,7 @@ function watch(source, bundles) {
          * @param {string} filePath
          */
         function onFileEvent(filePath) {
-            var bundle;
+            var parents;
 
             if (isReady) {
                 log([action, [filePath, 'cyan']]);
@@ -42,8 +43,10 @@ function watch(source, bundles) {
                     return;
                 }
 
-                bundle = getBundleName(filePath, source);
-                bundles[bundle]('updated');
+                // nl.bednarz.fixme: use something smarter than brute force
+                Object.keys(bundles).forEach(function (bundle) {
+                    bundles[bundle]('updated');
+                });
             }
         }
 
@@ -60,8 +63,10 @@ function watch(source, bundles) {
     }
 
     chokidar
-        .watch(source, {
-            ignored: /(?:\.(md|markdown)|_test.js)$/,
+        .watch([
+            path.join(source, '*.js'),
+            path.join('node_modules', app, '**/*.js')
+        ], {
             ignoreInitial: false
         })
         .on('add', onFileEventFactory('created'))
