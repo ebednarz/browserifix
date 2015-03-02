@@ -1,4 +1,4 @@
-# Browserifix [![npm version][npm-image]][npm-url] [![npm dependencies][david-image]][david-url]
+# browserifix [![npm version][npm-image]][npm-url] [![npm dependencies][david-image]][david-url]
 
 > Browser scripting quick-start kit.
 
