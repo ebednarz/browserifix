@@ -113,7 +113,9 @@ function initialize(value, key, resolve, reject, pattern) {
  * @param {Object} options
  */
 function browserifix(options) {
+    var all;
     var config;
+    var promise;
     var queue = [];
     var watch;
 
@@ -126,19 +128,26 @@ function browserifix(options) {
     lodash
         .forIn(config.bundles, function (value, key) {
             var promise = new Promise(function (resolve, reject) {
-                queue.push(promise);
                 initialize(value, key, resolve, reject, config.pattern);
             });
+            queue.push(promise);
         });
 
+    all = Promise.all(queue);
+
     if (config.done) {
-        Promise.all(queue).then(config.done);
+        all.then(config.done);
     }
 
     if (config.watch) {
         watch = require('./library/watch');
         watch(source, bundles, config.app);
     }
+
+    promise = new Promise(function (resolve, reject) {
+        all.then(resolve, reject);
+    });
+    return promise;
 }
 
 module.exports = browserifix;
