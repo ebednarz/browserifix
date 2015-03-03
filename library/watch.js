@@ -34,8 +34,6 @@ function watch(source, bundles, app) {
          * @param {string} filePath
          */
         function onFileEvent(filePath) {
-            var parents;
-
             if (isReady) {
                 log([action, [filePath, 'cyan']]);
 
@@ -52,7 +50,6 @@ function watch(source, bundles, app) {
 
         return onFileEvent;
     }
-
 
     function onReady() {
         isReady = true;
