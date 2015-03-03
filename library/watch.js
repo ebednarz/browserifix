@@ -1,7 +1,13 @@
 'use strict';
 var chokidar = require('chokidar');
+var getProjectDependencies = require('./get-project-dependencies');
 var log = require('./log');
 var path = require('path');
+
+function getBundleName(filePath) {
+    var name = path.basename(filePath, path.extname(filePath));
+    return name;
+}
 
 /**
  * @param {string} action
@@ -34,6 +40,8 @@ function watch(source, bundles, app) {
          * @param {string} filePath
          */
         function onFileEvent(filePath) {
+            var pattern;
+
             if (isReady) {
                 log([action, [filePath, 'cyan']]);
 
@@ -41,10 +49,20 @@ function watch(source, bundles, app) {
                     return;
                 }
 
-                // nl.bednarz.fixme: use something smarter than brute force
-                Object.keys(bundles).forEach(function (bundle) {
-                    bundles[bundle]('updated');
-                });
+                if (path.dirname(filePath) == source) {
+                    bundles[getBundleName(filePath)]('updated');
+                    return;
+                }
+
+                pattern = path.join(source, '*.js');
+                getProjectDependencies(pattern)
+                    .then(function (map) {
+                        Object.keys(map).forEach(function (key) {
+                            if (-1 !== map[key].indexOf(filePath)) {
+                                bundles[getBundleName(key)]('updated');
+                            }
+                        });
+                    });
             }
         }
 
