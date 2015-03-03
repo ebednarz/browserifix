@@ -9,7 +9,6 @@ var minstallify = require('minstallify');
 var mkdirp = require('mkdirp');
 var path = require('path');
 var packageData = require('./package');
-var q = require('q');
 var sourcemapFilename = require('sourcemap-filename');
 
 var MAGIC_NUMBER = 7;
@@ -41,10 +40,11 @@ function getWriteStream(id) {
 /**
  * @param {Object} value
  * @param {string} key
- * @param {Object} deferred
+ * @param {Function} resolve
+ * @param {Function} reject
  * @param {string} pattern
  */
-function initialize(value, key, deferred, pattern) {
+function initialize(value, key, resolve, reject, pattern) {
     var bundle;
     var mapFile = sourcemapFilename(key + '.js', pattern);
     var mapPath = path.join(target, mapFile);
@@ -57,14 +57,14 @@ function initialize(value, key, deferred, pattern) {
                 console.log(error.stack);
             }
 
-            deferred.reject();
+            reject();
         }
 
         function onFinish() {
             var endTime = new Date();
             var performance = (+endTime - startTime) + ' ms';
             log([action, [key, 'magenta'], 'bundle in', performance]);
-            deferred.resolve();
+            resolve();
         }
 
         bundle
@@ -125,13 +125,14 @@ function browserifix(options) {
     log(['started', packageData.name, packageData.version]);
     lodash
         .forIn(config.bundles, function (value, key) {
-            var deferred = q.defer();
-            queue.push(deferred.promise);
-            initialize(value, key, deferred, config.pattern);
+            var promise = new Promise(function (resolve, reject) {
+                queue.push(promise);
+                initialize(value, key, resolve, reject, config.pattern);
+            });
         });
 
     if (config.done) {
-        q.all(queue).done(config.done);
+        Promise.all(queue).then(config.done);
     }
 
     if (config.watch) {
