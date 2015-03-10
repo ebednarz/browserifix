@@ -1,5 +1,7 @@
 'use strict';
+var defaults = require('../data/defaults');
 var reverseConfig = require('reverse-config');
+
 var packageName = require('../package').name;
 
 function matchType(candidate, reference, key) {
@@ -12,7 +14,7 @@ function matchType(candidate, reference, key) {
     }
 }
 
-function mergeConfig(defaults, options) {
+function mergeConfig(options) {
     var config = JSON.parse(JSON.stringify(defaults));
     var moduleConfig = reverseConfig[packageName];
 

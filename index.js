@@ -119,7 +119,7 @@ function browserifix(options) {
     var queue = [];
     var watch;
 
-    config = mergeConfig(require('./data/defaults'), options);
+    config = mergeConfig(options);
     source = config.source;
     target = config.target;
     mkdirp.sync(target);
