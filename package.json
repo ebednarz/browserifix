@@ -1,6 +1,6 @@
 {
   "name": "browserifix",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "author": "Eric Bednarz <github@bednarz.nl>",
   "license": "MIT",
   "description": "Browser scripting quick-start kit",
