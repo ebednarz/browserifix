@@ -2,13 +2,15 @@
 var browserify = require('browserify');
 var exorcist = require('exorcist');
 var fs = require('fs');
+var lintify = require('lintify');
 var lodash = require('lodash');
 var log = require('./library/log');
 var mergeConfig = require('./library/merge-config');
 var minstallify = require('minstallify');
 var mkdirp = require('mkdirp');
-var path = require('path');
+var nocommentify = require('nocommentify');
 var packageData = require('./package');
+var path = require('path');
 var sourcemapFilename = require('sourcemap-filename');
 
 var MAGIC_NUMBER = 7;
@@ -81,7 +83,7 @@ function initialize(value, key, resolve, reject, pattern) {
     bundle
         .require(value.require || [])
         .external(value.external || [])
-        .transform('lintify', {
+        .transform(lintify, {
             errors: {
                 head: function (file) {
                     log(['errored', [file, 'cyan']]);
@@ -100,8 +102,8 @@ function initialize(value, key, resolve, reject, pattern) {
             },
             lintrc: require('./data/lintrc')
         })
-        .transform('nocommentify')
-        .transform('minstallify', {
+        .transform(nocommentify)
+        .transform(minstallify, {
             global: true
         })
         .add(getIndex(key));

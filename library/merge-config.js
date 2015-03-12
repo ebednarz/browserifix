@@ -25,7 +25,7 @@ function mergeConfig(options) {
 
     function setOption(key) {
         // runtime options can't overwrite package config options
-        if (moduleConfig.hasOwnProperty(key)) {
+        if (moduleConfig && moduleConfig.hasOwnProperty(key)) {
             throw new Error('Refusing to overwrite `' + key + '`');
         }
 
