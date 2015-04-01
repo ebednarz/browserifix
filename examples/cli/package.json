@@ -19,16 +19,16 @@
           ]
         }
       },
-      "source": "./source/script",
-      "target": "./target/script"
+      "source": "./source/js",
+      "target": "./web/js"
     }
   },
   "scripts": {
     "js": "browserifix",
-    "js:dev": "browserifix --watch"
+    "js:dev": "browserifix watch"
   },
   "dependencies": {
-    "browserifix": "0.0.22",
+    "browserifix": "0.0.23",
     "domready": "^1.0.7"
   }
 }
