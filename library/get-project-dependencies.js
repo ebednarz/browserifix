@@ -3,10 +3,6 @@ var getFileDependencies = require('./get-file-dependencies');
 var glob = require('glob');
 var path = require('path');
 
-/**
- * @param {string} pattern
- * @returns {Promise}
- */
 function getProjectDependencies(pattern) {
     var map = {};
     var files = [];

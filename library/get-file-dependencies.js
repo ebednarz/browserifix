@@ -5,10 +5,6 @@ var detective = require('detective');
 var fs = require('fs');
 var path = require('path');
 
-/**
- * @param {string} inputFile
- * @returns {Promise}
- */
 function getFileDependencies(inputFile) {
     var promise;
 
