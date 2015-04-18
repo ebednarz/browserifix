@@ -24,7 +24,10 @@ function browserifix(options) {
             };
             var build = initialize(value, key, deferred, config);
             bundles[key] = build;
-            build('created');
+
+            if (!config.watch) {
+                build('created');
+            }
         }
 
         promise = new Promise(itemExecutor);
