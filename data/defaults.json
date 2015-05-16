@@ -5,5 +5,5 @@
     },
     "map": "",
     "source": "./source/script",
-    "target": "./web/script"
+    "target": "./public/script"
 }
