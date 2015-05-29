@@ -17,6 +17,7 @@ function initialize(value, key, deferred, config) {
     var mapPath = path.join(config.target, mapFile);
     var bundle;
     var browserifyOptions;
+    var nocommentifyOptions;
     var minstallifyOptions;
 
     function build(action) {
@@ -53,11 +54,15 @@ function initialize(value, key, deferred, config) {
     minstallifyOptions = {
         global: true
     };
+    nocommentifyOptions = {
+        global: true
+    };
+    //lintifyOptions.global = true;
     bundle = browserify(browserifyOptions)
         .require(value.require || [])
         .external(value.external || [])
         .transform(lintify, lintifyOptions)
-        .transform(nocommentify)
+        .transform(nocommentify, nocommentifyOptions)
         .transform(minstallify, minstallifyOptions)
         .add(fileName);
     return build;
