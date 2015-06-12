@@ -41,7 +41,7 @@
     "debug": true,
     "elision": false,
     "eqnull": false,
-    "esnext": false,
+    "esnext": true,
     "expr": false,
     "lastsemic": false,
     "laxbreak": false,

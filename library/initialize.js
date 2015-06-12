@@ -1,15 +1,14 @@
 'use strict';
+var babelify = require('babelify');
 var browserify = require('browserify');
-var exorcist = require('exorcist');
 var getFileName = require('./get-file-name');
 var getWriteStream = require('./get-write-stream');
 var lintify = require('lintify');
 var lintifyOptions = require('./lintify-options');
 var log = require('./log');
-var minstallify = require('minstallify');
-var nocommentify = require('nocommentify');
 var path = require('path');
 var sourcemapFilename = require('sourcemap-filename');
+var uglify = require('./uglify');
 
 function initialize(value, key, deferred, config) {
     var fileName = getFileName(key, config.source);
@@ -23,27 +22,29 @@ function initialize(value, key, deferred, config) {
     function build(action) {
         var startTime = Number(new Date());
         var writeStream = getWriteStream(key, config.target);
-        var exorcism = exorcist(mapPath, '', '/SOURCEMAP');
 
         function onError(error) {
             if (0 !== error.message.indexOf('JSHint')) {
                 console.log(error.stack);
             }
 
-            deferred.reject();
+            deferred.reject(error);
         }
 
         function onFinish() {
             var endTime = Number(new Date());
             var performance = (endTime - startTime) + ' ms' ;
             log([action, [key, 'magenta'], 'bundle in', performance]);
-            deferred.resolve();
+            deferred.resolve({
+                code: path.join(config.target, key + '.js'),
+                map: mapPath
+            });
         }
 
         bundle
             .bundle()
             .on('error', onError)
-            .pipe(exorcism)
+            .pipe(uglify(key, config.target))
             .pipe(writeStream)
             .on('finish', onFinish);
     }
@@ -58,13 +59,16 @@ function initialize(value, key, deferred, config) {
         global: true
     };
     //lintifyOptions.global = true;
-    bundle = browserify(browserifyOptions)
+    bundle = browserify(fileName, browserifyOptions)
         .require(value.require || [])
         .external(value.external || [])
         .transform(lintify, lintifyOptions)
-        .transform(nocommentify, nocommentifyOptions)
-        .transform(minstallify, minstallifyOptions)
-        .add(fileName);
+        .transform(babelify.configure({
+            sourceMapRelative: process.cwd(),
+            ignore: /\/node_modules\/(?!_app\/)/
+        }), {
+            global: true
+        });
     return build;
 }
 

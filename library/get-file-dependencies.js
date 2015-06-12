@@ -1,7 +1,7 @@
 'use strict';
 var async = require('async');
 var browserResolve = require('browser-resolve');
-var detective = require('detective');
+var detective = require('detective-es6');
 var fs = require('fs');
 var path = require('path');
 

@@ -1,9 +1,12 @@
+import domready from 'domready';
+import foo from '_app/foo';
+
 /**
  * JSDoc
  */
-require('domready')(function () {
+domready(function () {
     // line comment
-    require('_app/foo')(); // out of place comment
+    foo(); // out of place comment
 });
 
 // trailing comment
