@@ -3,9 +3,17 @@ var async = require('async');
 var browserResolve = require('browser-resolve');
 var detective = require('detective-es6');
 var fs = require('fs');
+var packageName = require('../package').name;
 var path = require('path');
+var reverseConfig = require('reverse-config');
+
+var config = reverseConfig[packageName].bundles;
 
 function getFileDependencies(inputFile) {
+    var main = path.basename(inputFile, path.extname(inputFile));
+    var external = config[main].hasOwnProperty('external') ?
+        config[main].external :
+        [];
     var promise;
 
     function walk(file, callback) {
@@ -19,7 +27,9 @@ function getFileDependencies(inputFile) {
                 return callback(error);
             }
 
-            requires = detective(contents);
+            requires = detective(contents).filter(function (name) {
+                return (-1 === external.indexOf(name));
+            });
             async.map(requires, getDependencies, gotDependencies);
         }
 

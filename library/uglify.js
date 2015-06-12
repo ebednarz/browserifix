@@ -1,7 +1,7 @@
 'use strict';
 var fs = require('fs');
-var mold = require('mold-source-map');
 var path = require('path');
+var sourcemapFilename = require('sourcemap-filename');
 var uglifyJS = require('uglify-js');
 
 function split(content) {
@@ -53,7 +53,8 @@ module.exports = function (baseName, file, source, callback) {
 
     Promise
         .all([codePromise, mapPromise])
-        .then(function () {
-            callback();
+        .then(callback)
+        .then(null, function (reason) {
+            console.log(reason);
         });
 };
