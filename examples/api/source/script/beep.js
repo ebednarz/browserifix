@@ -1,1 +1,2 @@
-require('_app/foo')();
+import foo from '_app/foo';
+foo();
