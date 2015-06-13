@@ -26,8 +26,7 @@
   "scripts": {
     "js": "browserifix",
     "prejs:dev": "npm run js",
-    "js:dev": "browserifix watch",
-    "minify": "uglifyjs public/js/beep.js --in-source-map public/js/beep.js.map --source-map-root /XXX  --source-map public/js/beep.min.js.map --source-map-url beep.min.js.map --source-map-include-sources -o public/js/beep.min.js"
+    "js:dev": "browserifix watch"
   },
   "dependencies": {
     "browserifix": "0.1.0",
