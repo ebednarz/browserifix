@@ -30,7 +30,7 @@
     "minify": "uglifyjs public/js/beep.js --in-source-map public/js/beep.js.map --source-map-root /XXX  --source-map public/js/beep.min.js.map --source-map-url beep.min.js.map --source-map-include-sources -o public/js/beep.min.js"
   },
   "dependencies": {
-    "browserifix": "0.0.28",
+    "browserifix": "0.1.0",
     "domready": "^1.0.7"
   }
 }

@@ -12,15 +12,16 @@ You're Feeling Lucky
   use [watchify](https://www.npmjs.com/package/watchify).
 - you want to factor out all shared dependencies to a separate file;
   use [factor-bundle](https://www.npmjs.com/package/factor-bundle).
-- If you use lots o' transforms and plugins; 
+- you use lots o' transforms and plugins; 
   roll your own opinionated convenience package.
 
 ## Included
 
-- lint source files and abort bundling on error
-- line-by-line debugger friendly bundles
-    - only minify installed modules
-    - strip comments from user code
+- build production bundles as you type
+    - [JSHint](http://jshint.com/) (aborts build on error)
+    - [Babel](https://babeljs.io/) ECMAScript 6 modules 
+    - line-by-line debugger friendly [Uglification](https://github.com/mishoo/UglifyJS2)
+    - source maps
 
 ## Installation
 
