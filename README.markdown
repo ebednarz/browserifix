@@ -1,4 +1,4 @@
-# browserifix [![npm version][npm-image]][npm-url]
+# browserifix [![npm version][npm-image]][npm-url] [![code climate][code-climate-image]][code-climate-url]
 
 > Browser scripting quick-start kit.
 
@@ -42,3 +42,5 @@ MIT
 
 [npm-image]: https://img.shields.io/npm/v/browserifix.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/browserifix
+[code-climate-image]: https://img.shields.io/codeclimate/github/ebednarz/browserifix.svg?style=flat-square
+[code-climate-url]: https://codeclimate.com/github/ebednarz/browserifix

@@ -5,11 +5,15 @@
   "license": "MIT",
   "description": "Browser scripting quick-start kit",
   "keywords": [
+    "babel",
     "browser",
     "browserify",
+    "debug",
+    "es6",
     "jshint",
     "modules",
-    "sourcemap"
+    "sourcemap",
+    "uglify"
   ],
   "repository": {
     "type": "git",
