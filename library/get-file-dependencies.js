@@ -4,12 +4,18 @@ var browserResolve = require('browser-resolve');
 var bundleConfig = require('./bundle-config');
 var detective = require('detective-es6');
 var fs = require('fs');
+var lodash = require('lodash');
 var path = require('path');
+
+function relative(absolutePath) {
+    return path.relative(process.cwd(), absolutePath);
+}
 
 function getFileDependencies(inputFile) {
     var main = path.basename(inputFile, path.extname(inputFile));
     var bundleExternal = bundleConfig[main].external;
     var bundleRequire = bundleConfig[main].require;
+    var bundleRequireQueue;
     var promise;
 
     function walk(file, callback) {
@@ -48,34 +54,56 @@ function getFileDependencies(inputFile) {
                 return callback(error);
             }
 
-            dependencies.push(path.relative(process.cwd(), file));
+            dependencies.push(relative(file));
             callback(null, dependencies.concat.apply([], dependencies));
         }
     }
 
-    function executor(resolve, reject) {
+    function dependencyExecutor(resolve, reject) {
         function done(error, data) {
             if (error) {
                 reject(error);
             }
 
-            // add modules that are exposed by but not used in the bundle
-            // nl.bednarz.todo: invoke earlier and asynchronously
-            bundleRequire.forEach(function (name) {
-                var filePath = browserResolve.sync(name);
-                var relativePath = path.relative(process.cwd(), filePath);
-
-                if (-1 === data.indexOf(relativePath)) {
-                    data.push(relativePath);
-                }
-            });
             resolve(data);
         }
 
         walk(inputFile, done);
     }
 
-    promise = new Promise(executor);
+    function forEachRequiredBundle(name) {
+        function executor(resolve, reject) {
+            function callback(error, filePath) {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(relative(filePath));
+                }
+            }
+
+            browserResolve(name, {}, callback);
+        }
+
+        this.push(new Promise(executor));
+    }
+
+    bundleRequireQueue = [];
+    bundleRequire.forEach(forEachRequiredBundle, bundleRequireQueue);
+
+    promise = new Promise(function (resolve, reject) {
+        Promise
+            .all([
+                Promise.all(bundleRequireQueue),
+                new Promise(dependencyExecutor)
+            ])
+            .then(function (value) {
+                var union = lodash.union.apply(null, value);
+                resolve(union);
+            })
+            .then(null, function (reason) {
+                reject(reason);
+            });
+    });
     return promise;
 }
 
