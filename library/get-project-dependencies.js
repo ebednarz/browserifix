@@ -1,4 +1,5 @@
 'use strict';
+var bundleConfig = require('./bundle-config');
 var getFileDependencies = require('./get-file-dependencies');
 var glob = require('glob');
 var path = require('path');

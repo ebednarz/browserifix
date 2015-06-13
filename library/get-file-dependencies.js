@@ -1,19 +1,15 @@
 'use strict';
 var async = require('async');
 var browserResolve = require('browser-resolve');
+var bundleConfig = require('./bundle-config');
 var detective = require('detective-es6');
 var fs = require('fs');
-var packageName = require('../package').name;
 var path = require('path');
-var reverseConfig = require('reverse-config');
-
-var config = reverseConfig[packageName].bundles;
 
 function getFileDependencies(inputFile) {
     var main = path.basename(inputFile, path.extname(inputFile));
-    var external = config[main].hasOwnProperty('external') ?
-        config[main].external :
-        [];
+    var bundleExternal = bundleConfig[main].external;
+    var bundleRequire = bundleConfig[main].require;
     var promise;
 
     function walk(file, callback) {
@@ -21,23 +17,19 @@ function getFileDependencies(inputFile) {
         fs.readFile(file, 'utf8', read);
 
         function read(error, contents) {
-            var requires;
+            var imports;
 
             if (error) {
                 return callback(error);
             }
 
-            requires = detective(contents).filter(function (name) {
-                return (-1 === external.indexOf(name));
+            imports = detective(contents).filter(function (name) {
+                return (-1 === bundleExternal.indexOf(name));
             });
-            async.map(requires, getDependencies, gotDependencies);
+            async.map(imports, getDependencies, gotDependencies);
         }
 
         function getDependencies(name, callback) {
-            browserResolve(name, {
-                filename: file
-            }, resolved);
-
             function resolved(error, p) {
                 if (error) {
                     return callback(error);
@@ -45,6 +37,10 @@ function getFileDependencies(inputFile) {
 
                 return walk(p, callback);
             }
+
+            browserResolve(name, {
+                filename: file
+            }, resolved);
         }
 
         function gotDependencies(error, dependencies) {
@@ -63,6 +59,16 @@ function getFileDependencies(inputFile) {
                 reject(error);
             }
 
+            // add modules that are exposed by but not used in the bundle
+            // nl.bednarz.todo: invoke earlier and asynchronously
+            bundleRequire.forEach(function (name) {
+                var filePath = browserResolve.sync(name);
+                var relativePath = path.relative(process.cwd(), filePath);
+
+                if (-1 === data.indexOf(relativePath)) {
+                    data.push(relativePath);
+                }
+            });
             resolve(data);
         }
 

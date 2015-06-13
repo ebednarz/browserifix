@@ -1,5 +1,4 @@
 import domready from 'domready';
-import bar from '_app/bar';
 import foo from '_app/foo';
 
 /**
@@ -7,7 +6,7 @@ import foo from '_app/foo';
  */
 domready(function () {
     // line comment
-    foo(bar); // out of place comment
+    foo(); // out of place comment
 });
 
 // trailing comment
