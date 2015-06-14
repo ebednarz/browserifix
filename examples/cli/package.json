@@ -10,12 +10,20 @@
           "require": [
             "_app/foo",
             "_app/bar"
+          ],
+          "external": [
+            "react"
           ]
         },
         "boop": {
           "external": [
             "_app/foo",
             "_app/bar"
+          ]
+        },
+        "vendor": {
+          "require": [
+            "react"
           ]
         }
       },
@@ -30,6 +38,7 @@
   },
   "dependencies": {
     "browserifix": "0.1.0",
-    "domready": "^1.0.7"
+    "domready": "^1.0.7",
+    "react": "^0.13.3"
   }
 }
