@@ -19,17 +19,23 @@
           ]
         }
       },
+      "vendors": {
+        "vendor": [
+          "react"
+        ]
+      },
       "source": "./source/js",
       "target": "./public/js"
     }
   },
   "scripts": {
-    "js": "browserifix",
+    "js": "NODE_ENV=production browserifix",
     "prejs:dev": "npm run js",
     "js:dev": "browserifix watch"
   },
   "dependencies": {
     "browserifix": "0.1.0",
-    "domready": "^1.0.7"
+    "domready": "^1.0.7",
+    "react": "^0.13.3"
   }
 }

@@ -1,10 +1,12 @@
 'use strict';
+var getFileName = require('./library/get-file-name');
 var initialize = require('./library/initialize');
 var lodash = require('lodash');
 var log = require('./library/log');
 var mergeConfig = require('./library/merge-config');
 var mkdirp = require('mkdirp');
 var packageData = require('./package');
+var vendor = require('./library/vendor');
 
 function browserifix(options) {
     var bundles = {};
@@ -14,7 +16,7 @@ function browserifix(options) {
     var promise;
     var watch;
 
-    function setPromise(value, key) {
+    function setAppBundlePromise(value, key) {
         var promise;
 
         function itemExecutor(resolve, reject) {
@@ -34,6 +36,24 @@ function browserifix(options) {
         queue.push(promise);
     }
 
+    function setVendorBundlePromise(value, key) {
+        var vendorFileName = getFileName(key, config.target);
+        var promise;
+
+        function itemExecutor(resolve, reject) {
+            vendor(vendorFileName, value)
+                .then(function () {
+                    resolve();
+                })
+                .then(null, function (error) {
+                    reject(error);
+                });
+        }
+
+        promise = new Promise(itemExecutor);
+        queue.push(promise);
+    }
+
     function queueExecutor(resolve, reject) {
         all.then(resolve, reject);
     }
@@ -41,7 +61,8 @@ function browserifix(options) {
     config = mergeConfig(options);
     mkdirp.sync(config.target);
     log(['started', packageData.name, packageData.version]);
-    lodash.forIn(config.bundles, setPromise);
+    lodash.forIn(config.bundles, setAppBundlePromise);
+    lodash.forIn(config.vendors, setVendorBundlePromise);
     all = Promise.all(queue);
 
     if (config.done) {
