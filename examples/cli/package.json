@@ -29,7 +29,7 @@
     }
   },
   "scripts": {
-    "js": "NODE_ENV=production browserifix",
+    "js": "browserifix",
     "prejs:dev": "npm run js",
     "js:dev": "browserifix watch"
   },
