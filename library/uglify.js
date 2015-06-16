@@ -17,11 +17,31 @@ function decodeBase64(base64) {
     return new Buffer(base64, 'base64').toString();
 }
 
-module.exports = function (baseName, file, source, callback) {
+function uglify(baseName, file, source, onResolved) {
     var input = split(source);
     var codeFileName = baseName + '.min.js';
     var mapFileName = codeFileName + '.map';
     var bundle;
+
+    function filePromiseFactory(fileName, content) {
+        var promise = new Promise(function (resolve, reject) {
+            function callback(error) {
+                if (error) {
+                    reject(error)
+                } else {
+                    resolve();
+                }
+            }
+
+            fs.writeFile(path.join(file, fileName), content, callback);
+        });
+
+        return promise;
+    }
+
+    function onRejected(reason) {
+        console.log(reason);
+    }
 
     bundle = uglifyJS.minify(input.code, {
         fromString: true,
@@ -31,30 +51,12 @@ module.exports = function (baseName, file, source, callback) {
         sourceRoot: root
     });
 
-    var codePromise = new Promise(function (resolve, reject) {
-        fs.writeFile(path.join(file, codeFileName), bundle.code, 'utf8', function (error) {
-            if (error) {
-                reject(error)
-            } else {
-                resolve();
-            }
-        });
-    });
-
-    var mapPromise = new Promise(function (resolve, reject) {
-        fs.writeFile(path.join(file, mapFileName), bundle.map, 'utf8', function (error) {
-            if (error) {
-                reject(error)
-            } else {
-                resolve();
-            }
-        });
-    });
-
+    var codePromise = filePromiseFactory(codeFileName, bundle.code);
+    var mapPromise = filePromiseFactory(mapFileName, bundle.map);
     Promise
         .all([codePromise, mapPromise])
-        .then(callback)
-        .then(null, function (reason) {
-            console.log(reason);
-        });
-};
+        .then(onResolved)
+        .then(null, onRejected);
+}
+
+module.exports = uglify;
