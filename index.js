@@ -43,6 +43,7 @@ function browserifix(options) {
         function itemExecutor(resolve, reject) {
             vendor(vendorFileName, value)
                 .then(function () {
+                    console.log('vendor scripts done');
                     resolve();
                 })
                 .then(null, function (error) {

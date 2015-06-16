@@ -3,7 +3,7 @@ var browserify = require('browserify');
 var fs = require('fs');
 var uglifyJS = require('uglify-js');
 
-function bundle(fileName, dependencies) {
+function vendor(fileName, dependencies) {
     var outputPromise;
 
     function executor(resolve, reject) {
@@ -44,4 +44,4 @@ function bundle(fileName, dependencies) {
     return outputPromise;
 }
 
-module.exports = bundle;
+module.exports = vendor;
