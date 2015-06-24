@@ -30,7 +30,7 @@ function vendor(fileName, dependencies) {
         }
 
         browserify(dependencies)
-            .external(dependencies)
+            .require(dependencies)
             .bundle(bundle)
             .on('error', onError);
     }
