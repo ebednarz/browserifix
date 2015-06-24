@@ -56,7 +56,7 @@ function initialize(value, key, deferred, config) {
     })
         .require(value.require || [])
         .external(value.external || [])
-        //.transform(lintify, lintifyOptions)
+        .transform(lintify, lintifyOptions)
         .transform(babelify.configure({
             sourceMapRelative: process.cwd(),
             ignore: /\/node_modules\/(?!_app\/)/
