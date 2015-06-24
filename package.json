@@ -27,6 +27,7 @@
     "browserify": "^9.0.3",
     "chokidar": "^1.0.1",
     "detective-es6": "^1.1.1",
+    "escape-string-regexp": "^1.0.3",
     "glob": "^4.4.1",
     "lintify": "0.0.2",
     "lodash": "^3.3.1",

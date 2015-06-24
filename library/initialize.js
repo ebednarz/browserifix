@@ -1,6 +1,7 @@
 'use strict';
 var babelify = require('babelify');
 var browserify = require('browserify');
+var escapeStringRegexp = require('escape-string-regexp');
 var getFileName = require('./get-file-name');
 var lintify = require('lintify');
 var getLintifyOptions = require('./get-lintify-options');
@@ -11,6 +12,8 @@ var uglify = require('./uglify');
 function initialize(value, key, deferred, config) {
     var fileName = getFileName(key, config.source);
     var lintifyOptions = getLintifyOptions(key, true);
+    var appString = '[\\/]node_modules[\\/](?!' + escapeStringRegexp(config.app) + '[\\/])';
+    var appExpression = new RegExp(appString);
     var bundle;
 
     function build(action) {
@@ -59,7 +62,7 @@ function initialize(value, key, deferred, config) {
         .transform(lintify, lintifyOptions)
         .transform(babelify.configure({
             sourceMapRelative: process.cwd(),
-            ignore: /\/node_modules\/(?!_app\/)/
+            ignore: appExpression
         }), {
             global: true
         });
