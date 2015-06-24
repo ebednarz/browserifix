@@ -16,17 +16,23 @@ function getProjectDependencies(pattern) {
     }
 
     function executor(resolve, reject) {
-        function globCallback(error, matches) {
-            matches.forEach(setDependencies);
-            Promise.all(bundles).then(onAllResolved);
-        }
-
         function onAllResolved(values) {
             files.forEach(function (file, index) {
                 map[file] = values[index];
             });
-
             resolve(map);
+        }
+
+        function onRejected(reason) {
+            reject(reason);
+        }
+
+        function globCallback(error, matches) {
+            matches.forEach(setDependencies);
+            Promise
+                .all(bundles)
+                .then(onAllResolved)
+                .then(null, onRejected);
         }
 
         glob(pattern, globCallback);

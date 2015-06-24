@@ -2,23 +2,25 @@
 var log = require('./log');
 var MAGIC_NUMBER = 7;
 
-function lintifyOptions(key, global) {
+function getLintifyOptions(key) {
     var options;
 
     function head(file) {
         log(['errored', [file, 'cyan']]);
     }
 
-    function each(position, reason) {
+    function each(position, reason, source, url) {
         while (position.length < MAGIC_NUMBER) {
             position = ' ' + position;
         }
 
         log([position, [reason, 'red']]);
+        log([position, source]);
+        log([position, url]);
     }
 
     function tail() {
-        log(['aborted', [key, 'magenta'], 'bundle']);
+        log([['aborted', 'red'], [key, 'magenta'], 'bundle']);
     }
 
     options = {
@@ -27,11 +29,10 @@ function lintifyOptions(key, global) {
             each: each,
             tail: tail,
             message: 'ESLint Error'
-        },
-        global: !!global
+        }
     };
 
     return options;
 }
 
-module.exports = lintifyOptions;
+module.exports = getLintifyOptions;

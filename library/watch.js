@@ -45,6 +45,9 @@ function watch(source, bundles, app) {
                             bundles[getBundleName(key)]('updated');
                         }
                     });
+                })
+                .then(null, function (reason) {
+                    console.error(reason);
                 });
         }
 

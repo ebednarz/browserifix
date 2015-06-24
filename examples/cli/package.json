@@ -4,11 +4,6 @@
   "private": true,
   "description": "Browserifix CLI example",
   "config": {
-    "lintify": {
-      "env": {
-        "es6": false
-      }
-    },
     "browserifix": {
       "bundles": {
         "beep": {

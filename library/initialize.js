@@ -3,16 +3,22 @@ var babelify = require('babelify');
 var browserify = require('browserify');
 var escapeStringRegexp = require('escape-string-regexp');
 var getFileName = require('./get-file-name');
-var lintify = require('lintify');
 var getLintifyOptions = require('./get-lintify-options');
+var lintify = require('lintify');
 var lodash = require('lodash');
 var log = require('./log');
 var path = require('path');
 var uglify = require('./uglify');
 
+function logError(error) {
+    if (0 !== error.message.indexOf('ESLint')) {
+        console.error(error.stack);
+    }
+}
+
 function initialize(value, key, deferred, config) {
     var fileName = getFileName(key, config.source);
-    var lintifyOptions = getLintifyOptions(key, true);
+    var lintifyOptions = getLintifyOptions(key);
     var appString = '[\\/]node_modules[\\/](?!' + escapeStringRegexp(config.app) + '[\\/])';
     var appExpression = new RegExp(appString);
     var bundle;
@@ -22,10 +28,7 @@ function initialize(value, key, deferred, config) {
         var startTime = Number(new Date());
 
         function onError(error) {
-            if (0 !== error.message.indexOf('ESLint')) {
-                console.log(error.stack);
-            }
-
+            logError(error);
             deferred.reject(error);
         }
 
@@ -38,11 +41,11 @@ function initialize(value, key, deferred, config) {
 
         function onRejected(reason) {
             console.error(reason);
+            deferred.reject(reason);
         }
 
         function onBundle(error, buffer) {
             if (error) {
-                console.error(error);
                 onError(error);
             } else {
                 uglify(key, config.target, String(buffer))
@@ -74,7 +77,7 @@ function initialize(value, key, deferred, config) {
     })
         .require(value.require || [])
         .external(external)
-        .transform(lintify, lintifyOptions)
+        //.transform(lintify, lintifyOptions)
         .transform(babelify.configure({
             sourceMapRelative: process.cwd(),
             ignore: appExpression
