@@ -26,10 +26,9 @@ function lintifyOptions(key, global) {
             head: head,
             each: each,
             tail: tail,
-            message: 'JSHint Error'
+            message: 'ESLint Error'
         },
-        global: !!global,
-        lintrc: require('../data/lintrc')
+        global: !!global
     };
 
     return options;

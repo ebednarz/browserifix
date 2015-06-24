@@ -5,6 +5,7 @@ var escapeStringRegexp = require('escape-string-regexp');
 var getFileName = require('./get-file-name');
 var lintify = require('lintify');
 var getLintifyOptions = require('./get-lintify-options');
+var lodash = require('lodash');
 var log = require('./log');
 var path = require('path');
 var uglify = require('./uglify');
@@ -15,12 +16,13 @@ function initialize(value, key, deferred, config) {
     var appString = '[\\/]node_modules[\\/](?!' + escapeStringRegexp(config.app) + '[\\/])';
     var appExpression = new RegExp(appString);
     var bundle;
+    var external;
 
     function build(action) {
         var startTime = Number(new Date());
 
         function onError(error) {
-            if (0 !== error.message.indexOf('JSHint')) {
+            if (0 !== error.message.indexOf('ESLint')) {
                 console.log(error.stack);
             }
 
@@ -54,6 +56,16 @@ function initialize(value, key, deferred, config) {
             .on('error', onError);
     }
 
+    external = lodash.union(
+        lodash(config.vendors)
+            .map(function (item) {
+                return item;
+            })
+            .flatten()
+            .value(),
+        value.external
+    );
+
     bundle = browserify(fileName, {
         debug: true,
         extensions: [
@@ -61,8 +73,8 @@ function initialize(value, key, deferred, config) {
         ]
     })
         .require(value.require || [])
-        .external(value.external || [])
-        //.transform(lintify, lintifyOptions)
+        .external(external)
+        .transform(lintify, lintifyOptions)
         .transform(babelify.configure({
             sourceMapRelative: process.cwd(),
             ignore: appExpression

@@ -4,15 +4,17 @@
   "private": true,
   "description": "Browserifix CLI example",
   "config": {
+    "lintify": {
+      "env": {
+        "es6": false
+      }
+    },
     "browserifix": {
       "bundles": {
         "beep": {
           "require": [
             "_app/foo",
             "_app/bar"
-          ],
-          "external": [
-            "react"
           ]
         },
         "boop": {
