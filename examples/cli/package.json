@@ -35,7 +35,7 @@
     "js:dev": "browserifix watch"
   },
   "dependencies": {
-    "browserifix": "0.1.1",
+    "browserifix": "0.1.2",
     "domready": "^1.0.7",
     "react": "^0.13.3"
   }
