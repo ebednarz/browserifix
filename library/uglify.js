@@ -4,6 +4,7 @@ var lodash = require('lodash');
 var path = require('path');
 var sourcemapFilename = require('sourcemap-filename');
 var uglifyJS = require('uglify-js');
+var uglifySaveLicense = require('uglify-save-license');
 
 function split(content) {
     var splitExpression = /\/\/#\s+sourceMappingURL=data:application\/json;base64,/mg;
@@ -48,7 +49,7 @@ function getQueue(baseName, buildPath, input) {
     options = {
         fromString: true,
         output: {
-            comments: /^(?:@(license|preserve|cc_on)|!)/
+            comments: uglifySaveLicense
         }
     };
 

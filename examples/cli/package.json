@@ -30,7 +30,8 @@
   },
   "scripts": {
     "js": "browserifix",
-    "prejs:dev": "npm run js",
+    "js:user": "browserifix resume",
+    "prejs:dev": "npm run js:user",
     "js:dev": "browserifix watch"
   },
   "dependencies": {

@@ -75,7 +75,7 @@ function browserifix(options) {
     if (config.watch) {
         watch = require('./library/watch');
         watch(config.source, bundles, config.app);
-    } else {
+    } else if (!config.resume) {
         lodash.forIn(config.vendors, setVendorBundlePromise);
     }
 
