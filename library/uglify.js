@@ -26,7 +26,7 @@ function filePromiseFactory(filePath, content) {
         function callback(error) {
             if (error) {
                 console.error(error);
-                reject(error)
+                reject(error);
             } else {
                 resolve();
             }
