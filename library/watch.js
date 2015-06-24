@@ -57,7 +57,7 @@ function watch(source, bundles, app) {
 
     patternList = [
         path.join(source, '*.js'),
-        path.join('node_modules', app, '**/*.js')
+        path.join('node_modules', app, '**/*.{js,jsx}')
     ];
     chokidar
         .watch(patternList, {
