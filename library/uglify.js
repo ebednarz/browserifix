@@ -60,8 +60,7 @@ function getQueue(baseName, buildPath, input) {
             mangle: false,
             inSourceMap: JSON.parse(input.map),
             outSourceMap: mapFileName,
-            sourceMapIncludeSources: true,
-            sourceRoot: root
+            sourceMapIncludeSources: true
         });
     }
 
