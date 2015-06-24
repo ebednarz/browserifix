@@ -1,6 +1,6 @@
 {
   "name": "browserifix",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "author": "Eric Bednarz <github@bednarz.nl>",
   "license": "MIT",
   "description": "Browser scripting quick-start kit",
@@ -27,6 +27,7 @@
     "browserify": "^9.0.3",
     "chokidar": "^1.0.1",
     "detective-es6": "^1.1.1",
+    "escape-string-regexp": "^1.0.3",
     "glob": "^4.4.1",
     "lintify": "0.0.2",
     "lodash": "^3.3.1",
@@ -34,6 +35,7 @@
     "petty-print": "0.0.3",
     "reverse-config": "0.0.3",
     "sourcemap-filename": "0.0.5",
-    "uglify-js": "^2.4.23"
+    "uglify-js": "^2.4.23",
+    "uglify-save-license": "^0.4.1"
   }
 }

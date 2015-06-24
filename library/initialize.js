@@ -1,7 +1,7 @@
 'use strict';
 var babelify = require('babelify');
 var browserify = require('browserify');
-var fs = require('fs');
+var escapeStringRegexp = require('escape-string-regexp');
 var getFileName = require('./get-file-name');
 var lintify = require('lintify');
 var getLintifyOptions = require('./get-lintify-options');
@@ -9,11 +9,11 @@ var log = require('./log');
 var path = require('path');
 var uglify = require('./uglify');
 
-
 function initialize(value, key, deferred, config) {
-    var appExpression = new RegExp('/node_modules/(?!' + config.app + '/)');
     var fileName = getFileName(key, config.source);
     var lintifyOptions = getLintifyOptions(key, true);
+    var appString = '[\\/]node_modules[\\/](?!' + escapeStringRegexp(config.app) + '[\\/])';
+    var appExpression = new RegExp(appString);
     var bundle;
 
     function build(action) {
@@ -27,18 +27,25 @@ function initialize(value, key, deferred, config) {
             deferred.reject(error);
         }
 
-        function onFinish() {
+        function onResolved() {
             var endTime = Number(new Date());
             var performance = (endTime - startTime) + ' ms' ;
             log([action, [key, 'magenta'], 'bundle in', performance]);
             deferred.resolve();
         }
 
+        function onRejected(reason) {
+            console.error(reason);
+        }
+
         function onBundle(error, buffer) {
             if (error) {
+                console.error(error);
                 onError(error);
             } else {
-                uglify(key, config.target, String(buffer), onFinish);
+                uglify(key, config.target, String(buffer))
+                    .then(onResolved)
+                    .then(null, onRejected);
             }
         }
 

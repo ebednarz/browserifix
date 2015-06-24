@@ -20,12 +20,12 @@
             "_app/foo",
             "_app/bar"
           ]
-        },
-        "vendor": {
-          "require": [
-            "react"
-          ]
         }
+      },
+      "vendors": {
+        "vendor": [
+          "react"
+        ]
       },
       "source": "./source/js",
       "target": "./public/js"
@@ -33,11 +33,12 @@
   },
   "scripts": {
     "js": "browserifix",
-    "prejs:dev": "npm run js",
+    "js:user": "browserifix resume",
+    "prejs:dev": "npm run js:user",
     "js:dev": "browserifix watch"
   },
   "dependencies": {
-    "browserifix": "0.1.0",
+    "browserifix": "0.1.2",
     "domready": "^1.0.7",
     "react": "^0.13.3"
   }

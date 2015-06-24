@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 var browserifix = require('..');
+var argument = process.argv[2];
 
 browserifix({
-    watch: ('watch' == process.argv[2])
+    resume: ('resume' == argument),
+    watch: ('watch' == argument)
 });
