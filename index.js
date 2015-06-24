@@ -37,18 +37,26 @@ function browserifix(options) {
     }
 
     function setVendorBundlePromise(value, key) {
+        var startTime = Number(new Date());
         var vendorFileName = getFileName(key, config.target);
         var promise;
 
         function itemExecutor(resolve, reject) {
+            function onResolved() {
+                var endTime = Number(new Date());
+                var performance = (endTime - startTime) + ' ms' ;
+                log(['created', [key, 'magenta'], ['library', 'cyan'], 'bundle in', performance]);
+                resolve();
+            }
+
+            function onRejected(error) {
+                console.error(error);
+                reject(error);
+            }
+
             vendor(vendorFileName, value)
-                .then(function () {
-                    console.log('vendor scripts done');
-                    resolve();
-                })
-                .then(null, function (error) {
-                    reject(error);
-                });
+                .then(onResolved)
+                .then(null, onRejected);
         }
 
         promise = new Promise(itemExecutor);
@@ -63,16 +71,18 @@ function browserifix(options) {
     mkdirp.sync(config.target);
     log(['started', packageData.name, packageData.version]);
     lodash.forIn(config.bundles, setAppBundlePromise);
-    lodash.forIn(config.vendors, setVendorBundlePromise);
-    all = Promise.all(queue);
-
-    if (config.done) {
-        all.then(config.done);
-    }
 
     if (config.watch) {
         watch = require('./library/watch');
         watch(config.source, bundles, config.app);
+    } else {
+        lodash.forIn(config.vendors, setVendorBundlePromise);
+    }
+
+    all = Promise.all(queue);
+
+    if (config.done) {
+        all.then(config.done);
     }
 
     promise = new Promise(queueExecutor);

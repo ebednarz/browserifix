@@ -1,5 +1,6 @@
 'use strict';
 var fs = require('fs');
+var lodash = require('lodash');
 var path = require('path');
 var sourcemapFilename = require('sourcemap-filename');
 var uglifyJS = require('uglify-js');
@@ -9,7 +10,7 @@ function split(content) {
     var parts = content.split(splitExpression);
     return {
         code: parts[0],
-        map: decodeBase64(parts[1])
+        map: (parts[1] && decodeBase64(parts[1]))
     };
 }
 
@@ -17,46 +18,82 @@ function decodeBase64(base64) {
     return new Buffer(base64, 'base64').toString();
 }
 
-function uglify(baseName, file, source, onResolved) {
-    var input = split(source);
-    var codeFileName = baseName + '.min.js';
-    var mapFileName = codeFileName + '.map';
-    var bundle;
+function filePromiseFactory(filePath, content) {
+    var promise;
 
-    function filePromiseFactory(fileName, content) {
-        var promise = new Promise(function (resolve, reject) {
-            function callback(error) {
-                if (error) {
-                    reject(error)
-                } else {
-                    resolve();
-                }
+    function writeExecutor(resolve, reject) {
+        function callback(error) {
+            if (error) {
+                console.error(error);
+                reject(error)
+            } else {
+                resolve();
             }
+        }
 
-            fs.writeFile(path.join(file, fileName), content, callback);
-        });
-
-        return promise;
+        fs.writeFile(filePath, content, callback);
     }
 
-    function onRejected(reason) {
-        console.log(reason);
-    }
+    promise = new Promise(writeExecutor);
+    return promise;
+}
 
-    bundle = uglifyJS.minify(input.code, {
+function getQueue(baseName, buildPath, input) {
+    var codeFileName = baseName + '.min.js';
+    var queue = [];
+    var mapFileName;
+    var output;
+    var options;
+
+    options = {
         fromString: true,
-        inSourceMap: JSON.parse(input.map),
-        outSourceMap: mapFileName,
-        sourceMapIncludeSources: true,
-        sourceRoot: root
-    });
+        output: {
+            comments: /^(?:@(license|preserve|cc_on)|!)/
+        }
+    };
 
-    var codePromise = filePromiseFactory(codeFileName, bundle.code);
-    var mapPromise = filePromiseFactory(mapFileName, bundle.map);
-    Promise
-        .all([codePromise, mapPromise])
-        .then(onResolved)
-        .then(null, onRejected);
+    if (input.map) {
+        mapFileName = sourcemapFilename(codeFileName);
+        lodash.merge(options, {
+            compress: false,
+            mangle: false,
+            inSourceMap: JSON.parse(input.map),
+            outSourceMap: mapFileName,
+            sourceMapIncludeSources: true,
+            sourceRoot: root
+        });
+    }
+
+    output = uglifyJS.minify(input.code, options);
+    queue.push(filePromiseFactory(path.join(buildPath, codeFileName), output.code));
+
+    if (output.map) {
+        queue.push(filePromiseFactory(path.join(buildPath, mapFileName), output.map));
+    }
+
+    return queue;
+}
+
+/**
+ * @param {string} baseName
+ * @param {string} buildPath
+ * @param {string} source
+ * @returns {Promise}
+ */
+function uglify(baseName, buildPath, source) {
+    var promise;
+
+    function executor(resolve, reject) {
+        var input = split(source);
+        var queue = getQueue(baseName, buildPath, input);
+        Promise
+            .all(queue)
+            .then(resolve)
+            .then(null, reject);
+    }
+
+    promise = new Promise(executor);
+    return promise;
 }
 
 module.exports = uglify;

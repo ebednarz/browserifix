@@ -24,18 +24,25 @@ function initialize(value, key, deferred, config) {
             deferred.reject(error);
         }
 
-        function onFinish() {
+        function onResolved() {
             var endTime = Number(new Date());
             var performance = (endTime - startTime) + ' ms' ;
             log([action, [key, 'magenta'], 'bundle in', performance]);
             deferred.resolve();
         }
 
+        function onRejected(reason) {
+            console.error(reason);
+        }
+
         function onBundle(error, buffer) {
             if (error) {
+                console.error(error);
                 onError(error);
             } else {
-                uglify(key, config.target, String(buffer), onFinish);
+                uglify(key, config.target, String(buffer))
+                    .then(onResolved)
+                    .then(null, onRejected);
             }
         }
 
@@ -49,7 +56,7 @@ function initialize(value, key, deferred, config) {
     })
         .require(value.require || [])
         .external(value.external || [])
-        .transform(lintify, lintifyOptions)
+        //.transform(lintify, lintifyOptions)
         .transform(babelify.configure({
             sourceMapRelative: process.cwd(),
             ignore: /\/node_modules\/(?!_app\/)/
