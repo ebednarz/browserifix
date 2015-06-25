@@ -28,7 +28,7 @@ function browserifix(options) {
             bundles[key] = build;
 
             if (!config.watch) {
-                build('created');
+                //build('created');
             }
         }
 

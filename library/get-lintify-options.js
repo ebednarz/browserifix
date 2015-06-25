@@ -15,7 +15,11 @@ function getLintifyOptions(key) {
         }
 
         log([position, [reason, 'red']]);
-        log([position, source]);
+
+        if (source) {
+            log([position, source]);
+        }
+
         log([position, url]);
     }
 
