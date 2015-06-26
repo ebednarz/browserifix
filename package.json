@@ -10,7 +10,7 @@
     "browserify",
     "debug",
     "es6",
-    "jshint",
+    "eslint",
     "modules",
     "sourcemap",
     "uglify"
