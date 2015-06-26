@@ -2,23 +2,29 @@
 var log = require('./log');
 var MAGIC_NUMBER = 7;
 
-function lintifyOptions(key, global) {
+function getLintifyOptions(key, global) {
     var options;
 
     function head(file) {
         log(['errored', [file, 'cyan']]);
     }
 
-    function each(position, reason) {
+    function each(position, reason, source, url) {
         while (position.length < MAGIC_NUMBER) {
             position = ' ' + position;
         }
 
         log([position, [reason, 'red']]);
+
+        if (source) {
+            log([position, source]);
+        }
+
+        log([position, url]);
     }
 
     function tail() {
-        log(['aborted', [key, 'magenta'], 'bundle']);
+        log([['aborted', 'red'], [key, 'magenta'], 'bundle']);
     }
 
     options = {
@@ -26,13 +32,12 @@ function lintifyOptions(key, global) {
             head: head,
             each: each,
             tail: tail,
-            message: 'JSHint Error'
+            message: 'ESLint Error'
         },
-        global: !!global,
-        lintrc: require('../data/lintrc')
+        global: !!global
     };
 
     return options;
 }
 
-module.exports = lintifyOptions;
+module.exports = getLintifyOptions;

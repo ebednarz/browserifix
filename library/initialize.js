@@ -1,64 +1,89 @@
 'use strict';
 var babelify = require('babelify');
+var benchmark = require('./benchmark');
 var browserify = require('browserify');
 var escapeStringRegexp = require('escape-string-regexp');
 var getFileName = require('./get-file-name');
-var lintify = require('lintify');
 var getLintifyOptions = require('./get-lintify-options');
+var lintify = require('lintify');
+var lodash = require('lodash');
 var log = require('./log');
 var path = require('path');
 var uglify = require('./uglify');
+var watchify = require('watchify');
+
+function logError(error) {
+    if (0 !== error.message.indexOf('ESLint')) {
+        console.error(error.stack);
+    }
+}
 
 function initialize(value, key, deferred, config) {
     var fileName = getFileName(key, config.source);
     var lintifyOptions = getLintifyOptions(key, true);
     var appString = '[\\/]node_modules[\\/](?!' + escapeStringRegexp(config.app) + '[\\/])';
     var appExpression = new RegExp(appString);
+    var action = 'created';
     var bundle;
+    var external;
+    var options;
+    var startTime;
+    var watcher;
 
-    function build(action) {
-        var startTime = Number(new Date());
-
-        function onError(error) {
-            if (0 !== error.message.indexOf('JSHint')) {
-                console.log(error.stack);
-            }
-
-            deferred.reject(error);
-        }
-
-        function onResolved() {
-            var endTime = Number(new Date());
-            var performance = (endTime - startTime) + ' ms' ;
-            log([action, [key, 'magenta'], 'bundle in', performance]);
-            deferred.resolve();
-        }
-
-        function onRejected(reason) {
-            console.error(reason);
-        }
-
-        function onBundle(error, buffer) {
-            if (error) {
-                console.error(error);
-                onError(error);
-            } else {
-                uglify(key, config.target, String(buffer))
-                    .then(onResolved)
-                    .then(null, onRejected);
-            }
-        }
-
-        bundle
-            .bundle(onBundle)
-            .on('error', onError);
+    function onBuildError(error) {
+        logError(error);
+        deferred.reject(error);
     }
 
-    bundle = browserify(fileName, {
-        debug: true
-    })
+    function onBuildResolved() {
+        var performance = benchmark(startTime);
+        log([action, [key, 'magenta'], 'bundle in', performance]);
+        deferred.resolve();
+    }
+
+    function onBuildRejected(reason) {
+        console.error(reason);
+        deferred.reject(reason);
+    }
+
+    function onBundle(error, buffer) {
+        startTime = Number(new Date());
+
+        if (error) {
+            onBuildError(error);
+        } else {
+            uglify(key, config.target, String(buffer))
+                .then(onBuildResolved)
+                .then(null, onBuildRejected);
+        }
+    }
+
+    external = lodash.union(
+        lodash(config.vendors)
+            .map(function (item) {
+                return item;
+            })
+            .flatten()
+            .value(),
+        value.external
+    );
+
+    options = {
+        debug: true,
+        extensions: [
+            '.jsx'
+        ]
+    };
+
+    if (config.watch) {
+        options.cache = {};
+        options.poll = true;
+        options.packageCache = {};
+    }
+
+    bundle = browserify(fileName, options)
         .require(value.require || [])
-        .external(value.external || [])
+        .external(external)
         .transform(lintify, lintifyOptions)
         .transform(babelify.configure({
             sourceMapRelative: process.cwd(),
@@ -66,7 +91,25 @@ function initialize(value, key, deferred, config) {
         }), {
             global: true
         });
-    return build;
+
+    if (config.watch) {
+        watcher = watchify(bundle);
+        watcher
+            .on('update', function (ids) {
+                ids.forEach(function (file) {
+                    var relativePath = path.relative(process.cwd(), file);
+                    log(['changed', [relativePath, 'cyan']]);
+                });
+                action = 'updated';
+                watcher.bundle(onBundle);
+            })
+            .on('error', onBuildError)
+            .bundle(onBundle);
+    } else {
+        bundle
+            .bundle(onBundle)
+            .on('error', onBuildError);
+    }
 }
 
 module.exports = initialize;

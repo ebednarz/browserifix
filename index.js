@@ -9,12 +9,11 @@ var packageData = require('./package');
 var vendor = require('./library/vendor');
 
 function browserifix(options) {
-    var bundles = {};
-    var queue = [];
+    var appBundleQueue = [];
+    var vendorBundleQueue = [];
     var all;
     var config;
     var promise;
-    var watch;
 
     function setAppBundlePromise(value, key) {
         var promise;
@@ -24,16 +23,11 @@ function browserifix(options) {
                 resolve: resolve,
                 reject: reject
             };
-            var build = initialize(value, key, deferred, config);
-            bundles[key] = build;
-
-            if (!config.watch) {
-                build('created');
-            }
+            initialize(value, key, deferred, config);
         }
 
         promise = new Promise(itemExecutor);
-        queue.push(promise);
+        appBundleQueue.push(promise);
     }
 
     function setVendorBundlePromise(value, key) {
@@ -54,13 +48,19 @@ function browserifix(options) {
                 reject(error);
             }
 
+            log(['prepare', [key, 'magenta'], ['library', 'cyan'], 'bundle']);
+
+            value.forEach(function (dependency) {
+                log(['package', [dependency, 'cyan']]);
+            });
+
             vendor(vendorFileName, value)
                 .then(onResolved)
                 .then(null, onRejected);
         }
 
         promise = new Promise(itemExecutor);
-        queue.push(promise);
+        appBundleQueue.push(promise);
     }
 
     function queueExecutor(resolve, reject) {
@@ -70,16 +70,17 @@ function browserifix(options) {
     config = mergeConfig(options);
     mkdirp.sync(config.target);
     log(['started', packageData.name, packageData.version]);
-    lodash.forIn(config.bundles, setAppBundlePromise);
 
-    if (config.watch) {
-        watch = require('./library/watch');
-        watch(config.source, bundles, config.app);
-    } else if (!config.resume) {
+    if (config.vendor) {
         lodash.forIn(config.vendors, setVendorBundlePromise);
+        all = Promise.all(vendorBundleQueue);
+    } else if (config.watch) {
+        lodash.forIn(config.bundles, setAppBundlePromise);
+    } else {
+        lodash.forIn(config.vendors, setVendorBundlePromise);
+        lodash.forIn(config.bundles, setAppBundlePromise);
+        all = Promise.all(vendorBundleQueue.concat(appBundleQueue));
     }
-
-    all = Promise.all(queue);
 
     if (config.done) {
         all.then(config.done);

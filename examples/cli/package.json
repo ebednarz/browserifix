@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "description": "Browserifix CLI example",
+  "eslintConfig": {
+    "extends": "@info.nl/eslint-config-berlin"
+  },
   "config": {
     "browserifix": {
       "bundles": {
@@ -30,12 +33,12 @@
   },
   "scripts": {
     "js": "browserifix",
-    "js:user": "browserifix resume",
-    "prejs:dev": "npm run js:user",
-    "js:dev": "browserifix watch"
+    "js:dev": "browserifix watch",
+    "js:lib": "browserifix vendor"
   },
   "dependencies": {
-    "browserifix": "0.1.3",
+    "@info.nl/eslint-config-berlin": "^0.1.1",
+    "browserifix": "0.1.2",
     "domready": "^1.0.7",
     "react": "^0.13.3"
   }

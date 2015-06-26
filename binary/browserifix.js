@@ -4,6 +4,6 @@ var browserifix = require('..');
 var argument = process.argv[2];
 
 browserifix({
-    resume: ('resume' == argument),
+    vendor: ('vendor' == argument),
     watch: ('watch' == argument)
 });
