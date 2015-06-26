@@ -54,7 +54,7 @@ function browserifix(options) {
                 log(['package', [dependency, 'cyan']]);
             });
 
-            vendor(vendorFileName, value)
+            vendor(vendorFileName, value, config)
                 .then(onResolved)
                 .then(null, onRejected);
         }

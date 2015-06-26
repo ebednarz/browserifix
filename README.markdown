@@ -8,8 +8,7 @@ You're Feeling Lucky
 
 ## This package is not interesting for you if
 
-- you have bundles with huge ASTs; 
-  use [watchify](https://www.npmjs.com/package/watchify).
+- you build everything into a single bundle
 - you want to factor out all shared dependencies to a separate file;
   use [factor-bundle](https://www.npmjs.com/package/factor-bundle).
 - you use lots o' transforms and plugins; 
@@ -18,7 +17,7 @@ You're Feeling Lucky
 ## Included
 
 - build production bundles as you type
-    - [JSHint](http://jshint.com/) (aborts build on error)
+    - [ESLint](http://jshint.com/) (aborts build on error)
     - [Babel](https://babeljs.io/) ECMAScript 6 modules 
     - line-by-line debugger friendly [Uglification](https://github.com/mishoo/UglifyJS2)
     - source maps

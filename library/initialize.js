@@ -52,7 +52,7 @@ function initialize(value, key, deferred, config) {
         if (error) {
             onBuildError(error);
         } else {
-            uglify(key, config.target, String(buffer))
+            uglify(key + '.js', String(buffer), config)
                 .then(onBuildResolved)
                 .then(null, onBuildRejected);
         }

@@ -2,9 +2,9 @@
 var fs = require('fs');
 var lodash = require('lodash');
 var path = require('path');
+var minifiedFileName = require('./minified-filename');
 var sourcemapFilename = require('sourcemap-filename');
 var uglifyJS = require('uglify-js');
-var uglifySaveLicense = require('uglify-save-license');
 
 function split(content) {
     var splitExpression = /\/\/#\s+sourceMappingURL=data:application\/json;base64,/mg;
@@ -39,8 +39,8 @@ function filePromiseFactory(filePath, content) {
     return promise;
 }
 
-function getQueue(baseName, buildPath, input) {
-    var codeFileName = baseName + '.min.js';
+function getQueue(fileName, input, config) {
+    var codeFileName = minifiedFileName(fileName, config.min);
     var queue = [];
     var mapFileName;
     var output;
@@ -49,12 +49,12 @@ function getQueue(baseName, buildPath, input) {
     options = {
         fromString: true,
         output: {
-            comments: uglifySaveLicense
+            comments: /(^!|@license|@preserve)/
         }
     };
 
     if (input.map) {
-        mapFileName = sourcemapFilename(codeFileName);
+        mapFileName = sourcemapFilename(codeFileName, config.map);
         lodash.merge(options, {
             compress: false,
             mangle: false,
@@ -65,27 +65,27 @@ function getQueue(baseName, buildPath, input) {
     }
 
     output = uglifyJS.minify(input.code, options);
-    queue.push(filePromiseFactory(path.join(buildPath, codeFileName), output.code));
+    queue.push(filePromiseFactory(path.join(config.target, codeFileName), output.code));
 
     if (output.map) {
-        queue.push(filePromiseFactory(path.join(buildPath, mapFileName), output.map));
+        queue.push(filePromiseFactory(path.join(config.target, mapFileName), output.map));
     }
 
     return queue;
 }
 
 /**
- * @param {string} baseName
- * @param {string} buildPath
+ * @param {string} fileName
  * @param {string} source
+ * @param {Object} config
  * @returns {Promise}
  */
-function uglify(baseName, buildPath, source) {
+function uglify(fileName, source, config) {
     var promise;
 
     function executor(resolve, reject) {
         var input = split(source);
-        var queue = getQueue(baseName, buildPath, input);
+        var queue = getQueue(fileName, input, config);
         Promise
             .all(queue)
             .then(resolve)

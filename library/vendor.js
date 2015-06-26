@@ -4,7 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var uglify = require('./uglify');
 
-function vendor(fileName, dependencies) {
+function vendor(fileName, dependencies, config) {
     var outputPromise;
 
     function executor(resolve, reject) {
@@ -15,15 +15,13 @@ function vendor(fileName, dependencies) {
 
         function bundle(error, buffer) {
             var buildPath = path.dirname(fileName);
-            var extension = path.extname(fileName);
-            var baseName = path.basename(fileName, extension);
             var input;
 
             if (error) {
                 onError(error);
             } else {
                 input = buffer.toString();
-                uglify(baseName, buildPath, input)
+                uglify(fileName, input, config)
                     .then(resolve)
                     .then(null, onError);
             }
