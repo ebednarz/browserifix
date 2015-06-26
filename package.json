@@ -29,7 +29,7 @@
     "detective-es6": "^1.1.1",
     "escape-string-regexp": "^1.0.3",
     "glob": "^4.4.1",
-    "lintify": "0.0.2",
+    "lintify": "0.1.1",
     "lodash": "^3.3.1",
     "mkdirp": "^0.5.0",
     "petty-print": "0.0.3",

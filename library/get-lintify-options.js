@@ -2,7 +2,7 @@
 var log = require('./log');
 var MAGIC_NUMBER = 7;
 
-function getLintifyOptions(key) {
+function getLintifyOptions(key, global) {
     var options;
 
     function head(file) {
@@ -33,7 +33,8 @@ function getLintifyOptions(key) {
             each: each,
             tail: tail,
             message: 'ESLint Error'
-        }
+        },
+        global: !!global
     };
 
     return options;

@@ -1,7 +1,7 @@
 'use strict';
 var babelify = require('babelify');
+var benchmark = require('./benchmark');
 var browserify = require('browserify');
-var watchify = require('watchify');
 var escapeStringRegexp = require('escape-string-regexp');
 var getFileName = require('./get-file-name');
 var getLintifyOptions = require('./get-lintify-options');
@@ -10,6 +10,7 @@ var lodash = require('lodash');
 var log = require('./log');
 var path = require('path');
 var uglify = require('./uglify');
+var watchify = require('watchify');
 
 function logError(error) {
     if (0 !== error.message.indexOf('ESLint')) {
@@ -19,13 +20,42 @@ function logError(error) {
 
 function initialize(value, key, deferred, config) {
     var fileName = getFileName(key, config.source);
-    var lintifyOptions = getLintifyOptions(key);
+    var lintifyOptions = getLintifyOptions(key, true);
     var appString = '[\\/]node_modules[\\/](?!' + escapeStringRegexp(config.app) + '[\\/])';
     var appExpression = new RegExp(appString);
+    var action = 'created';
     var bundle;
     var external;
+    var options;
+    var startTime;
+    var watcher;
 
-    function build(action) {
+    function onBuildError(error) {
+        logError(error);
+        deferred.reject(error);
+    }
+
+    function onBuildResolved() {
+        var performance = benchmark(startTime);
+        log([action, [key, 'magenta'], 'bundle in', performance]);
+        deferred.resolve();
+    }
+
+    function onBuildRejected(reason) {
+        console.error(reason);
+        deferred.reject(reason);
+    }
+
+    function onBundle(error, buffer) {
+        startTime = Number(new Date());
+
+        if (error) {
+            onBuildError(error);
+        } else {
+            uglify(key, config.target, String(buffer))
+                .then(onBuildResolved)
+                .then(null, onBuildRejected);
+        }
     }
 
     external = lodash.union(
@@ -38,14 +68,20 @@ function initialize(value, key, deferred, config) {
         value.external
     );
 
-    bundle = browserify(fileName, {
+    options = {
         debug: true,
         extensions: [
             '.jsx'
-        ],
-        cache: {},
-        packageCache: {}
-    })
+        ]
+    };
+
+    if (config.watch) {
+        options.cache = {};
+        options.poll = true;
+        options.packageCache = {};
+    }
+
+    bundle = browserify(fileName, options)
         .require(value.require || [])
         .external(external)
         .transform(lintify, lintifyOptions)
@@ -56,45 +92,24 @@ function initialize(value, key, deferred, config) {
             global: true
         });
 
-    var startTime = Number(new Date());
-
-    function onBuildError(error) {
-        logError(error);
-        deferred.reject(error);
+    if (config.watch) {
+        watcher = watchify(bundle);
+        watcher
+            .on('update', function (ids) {
+                ids.forEach(function (file) {
+                    var relativePath = path.relative(process.cwd(), file);
+                    log(['changed', [relativePath, 'cyan']]);
+                });
+                action = 'updated';
+                watcher.bundle(onBundle);
+            })
+            .on('error', onBuildError)
+            .bundle(onBundle);
+    } else {
+        bundle
+            .bundle(onBundle)
+            .on('error', onBuildError);
     }
-
-    function onBuildResolved() {
-        var endTime = Number(new Date());
-        var performance = (endTime - startTime) + ' ms' ;
-        log(['updated', [key, 'magenta'], 'bundle in', performance]);
-        deferred.resolve();
-    }
-
-    function onBuildRejected(reason) {
-        console.error(reason);
-        deferred.reject(reason);
-    }
-
-    function onBundle(error, buffer) {
-        if (error) {
-            onBuildError(error);
-        } else {
-            uglify(key, config.target, String(buffer))
-                .then(onBuildResolved)
-                .then(null, onBuildRejected);
-        }
-    }
-
-    var w = watchify(bundle);
-    w
-        .on('update', function (ids) {
-            w.bundle(onBundle);
-        })
-        .on('error', onBuildError);
-
-    w.bundle(onBundle);
-
-    return build;
 }
 
 module.exports = initialize;

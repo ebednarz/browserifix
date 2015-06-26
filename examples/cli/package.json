@@ -33,9 +33,8 @@
   },
   "scripts": {
     "js": "browserifix",
-    "js:user": "browserifix resume",
-    "prejs:dev": "npm run js:user",
-    "js:dev": "browserifix watch"
+    "js:dev": "browserifix watch",
+    "js:lib": "browserifix vendor"
   },
   "dependencies": {
     "@info.nl/eslint-config-berlin": "^0.1.1",
