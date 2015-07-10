@@ -1,4 +1,5 @@
 'use strict';
+var benchmark = require('./library/benchmark');
 var getFileName = require('./library/get-file-name');
 var initialize = require('./library/initialize');
 var lodash = require('lodash');
@@ -14,6 +15,7 @@ function browserifix(options) {
     var all;
     var config;
     var promise;
+    var startTime;
 
     function setAppBundlePromise(value, key) {
         var promise;
@@ -60,7 +62,7 @@ function browserifix(options) {
         }
 
         promise = new Promise(itemExecutor);
-        appBundleQueue.push(promise);
+        vendorBundleQueue.push(promise);
     }
 
     function queueExecutor(resolve, reject) {
@@ -71,7 +73,14 @@ function browserifix(options) {
     mkdirp.sync(config.target);
 
     if (config.watch) {
+        startTime = Number(new Date());
         lodash.forIn(config.bundles, setAppBundlePromise);
+        Promise
+            .all(appBundleQueue)
+            .then(function () {
+                var performance = benchmark(startTime);
+                log(['watcher initialized in', performance]);
+            });
         return;
     }
 
@@ -80,6 +89,9 @@ function browserifix(options) {
     if (config.vendor) {
         lodash.forIn(config.vendors, setVendorBundlePromise);
         all = Promise.all(vendorBundleQueue);
+    } else if (config.bundle) {
+        lodash.forIn(config.bundles, setAppBundlePromise);
+        all = Promise.all(appBundleQueue);
     } else {
         lodash.forIn(config.vendors, setVendorBundlePromise);
         lodash.forIn(config.bundles, setAppBundlePromise);

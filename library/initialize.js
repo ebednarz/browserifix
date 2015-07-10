@@ -106,14 +106,11 @@ function initialize(value, key, deferred, config) {
             })
             .on('error', onBuildError)
             .bundle(function (error) {
-                var performance;
-
                 if (error) {
                     onBuildError(error);
                 }
 
-                performance = benchmark(startTime);
-                log(['watcher initialized in', performance]);
+                deferred.resolve();
             });
     } else {
         bundle
