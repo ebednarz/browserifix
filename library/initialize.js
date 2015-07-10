@@ -93,6 +93,7 @@ function initialize(value, key, deferred, config) {
         });
 
     if (config.watch) {
+        startTime = Number(new Date());
         watcher = watchify(bundle);
         watcher
             .on('update', function (ids) {
@@ -104,7 +105,16 @@ function initialize(value, key, deferred, config) {
                 watcher.bundle(onBundle);
             })
             .on('error', onBuildError)
-            .bundle(onBundle);
+            .bundle(function (error) {
+                var performance;
+
+                if (error) {
+                    onBuildError(error);
+                }
+
+                performance = benchmark(startTime);
+                log(['watcher initialized in', performance]);
+            });
     } else {
         bundle
             .bundle(onBundle)

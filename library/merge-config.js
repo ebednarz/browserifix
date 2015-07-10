@@ -1,25 +1,30 @@
 'use strict';
 var defaults = require('../data/defaults');
+var lodash = require('lodash');
 var reverseConfig = require('reverse-config');
-
 var packageName = require('../package').name;
 
-function matchType(candidate, reference, key) {
-    var referenceValue = (reference.hasOwnProperty(key) && reference[key]);
-
-    if (referenceValue) {
-        if (candidate[key].constructor !== referenceValue.constructor) {
-            throw new TypeError('Bad type: `' + key + '`');
+function expand(array) {
+    var bundles = {};
+    array.forEach(function (bundle) {
+        if ('string' == typeof bundle) {
+            bundles[bundle] = {};
+        } else {
+            lodash.merge(bundles, bundle);
         }
-    }
+    });
+    return bundles;
 }
 
 function mergeConfig(options) {
     var config = JSON.parse(JSON.stringify(defaults));
     var moduleConfig = reverseConfig[packageName];
 
+    if (Array.isArray(moduleConfig.bundles)) {
+
+    }
+
     function setConfig(key) {
-        matchType(moduleConfig, defaults, key);
         config[key] = moduleConfig[key];
     }
 
@@ -29,7 +34,6 @@ function mergeConfig(options) {
             throw new Error('Refusing to overwrite `' + key + '`');
         }
 
-        matchType(options, defaults, key);
         config[key] = options[key];
     }
 
@@ -39,6 +43,10 @@ function mergeConfig(options) {
 
     if (options) {
         Object.keys(options).forEach(setOption);
+    }
+
+    if (Array.isArray(config.bundles)) {
+        config.bundles = expand(config.bundles);
     }
 
     return config;

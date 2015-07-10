@@ -1,8 +1,8 @@
 {
     "app": "_app",
-    "bundles": {
-        "main": {}
-    },
+    "bundles": [
+      "main"
+    ],
     "map": "",
     "source": "./source/script",
     "target": "./public/script"

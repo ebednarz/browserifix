@@ -69,13 +69,17 @@ function browserifix(options) {
 
     config = mergeConfig(options);
     mkdirp.sync(config.target);
+
+    if (config.watch) {
+        lodash.forIn(config.bundles, setAppBundlePromise);
+        return;
+    }
+
     log(['started', packageData.name, packageData.version]);
 
     if (config.vendor) {
         lodash.forIn(config.vendors, setVendorBundlePromise);
         all = Promise.all(vendorBundleQueue);
-    } else if (config.watch) {
-        lodash.forIn(config.bundles, setAppBundlePromise);
     } else {
         lodash.forIn(config.vendors, setVendorBundlePromise);
         lodash.forIn(config.bundles, setAppBundlePromise);
