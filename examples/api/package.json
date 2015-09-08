@@ -35,7 +35,7 @@
     "js": "gulp"
   },
   "dependencies": {
-    "browserifix": "0.3.3",
+    "browserifix": "0.4.0",
     "gulp": "^3.8.11"
   }
 }
