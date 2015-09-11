@@ -21,13 +21,21 @@ function logError(error) {
 function initialize(value, key, deferred, config) {
     var fileName = getFileName(key, config.source);
     var lintifyOptions = getLintifyOptions(key, true);
-    var appExpression = new RegExp(escapeStringRegexp(config.app));
+    var babelScope;
     var action = 'created';
     var bundle;
     var external;
     var options;
     var startTime;
     var watcher;
+
+    if (Array.isArray(config.babel)) {
+        config.babel = config.babel.map(function (pattern) {
+            return new RegExp(escapeStringRegexp(pattern));
+        });
+    } else {
+        babelScope = new RegExp(escapeStringRegexp(config.babel));
+    }
 
     function onBuildError(error) {
         logError(error);
@@ -86,7 +94,7 @@ function initialize(value, key, deferred, config) {
         .transform(lintify, lintifyOptions)
         .transform(babelify.configure({
             sourceMapRelative: process.cwd(),
-            only: appExpression
+            only: babelScope
         }), {
             global: true
         });
