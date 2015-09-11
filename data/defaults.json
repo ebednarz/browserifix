@@ -1,5 +1,5 @@
 {
-    "app": "_app",
+    "app": "/node_modules/_app/",
     "bundles": [
       "main"
     ],

@@ -21,8 +21,7 @@ function logError(error) {
 function initialize(value, key, deferred, config) {
     var fileName = getFileName(key, config.source);
     var lintifyOptions = getLintifyOptions(key, true);
-    var appString = '[\\/]node_modules[\\/](?!' + escapeStringRegexp(config.app) + '[\\/])';
-    var appExpression = new RegExp(appString);
+    var appExpression = new RegExp(escapeStringRegexp(config.app));
     var action = 'created';
     var bundle;
     var external;
@@ -87,7 +86,7 @@ function initialize(value, key, deferred, config) {
         .transform(lintify, lintifyOptions)
         .transform(babelify.configure({
             sourceMapRelative: process.cwd(),
-            ignore: appExpression
+            only: appExpression
         }), {
             global: true
         });
