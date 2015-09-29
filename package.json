@@ -1,9 +1,8 @@
 {
   "name": "@info.nl/jsxmas",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "author": "Eric Bednarz <github@bednarz.nl>",
-  "contributors": [
-  ],
+  "contributors": [],
   "license": "MIT",
   "description": "Info.nl browser scripting quick-start kit.",
   "keywords": [
