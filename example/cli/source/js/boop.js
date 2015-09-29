@@ -1,5 +1,5 @@
-import foo from '_app/foo';
-import bar from '_app/bar';
-import baz from '_app/baz';
+import foo from 'foo';
+import bar from 'bar';
+import baz from 'baz';
 
 foo(bar, baz);

@@ -4,21 +4,27 @@
   "private": true,
   "description": "@info.nl JSXmas CLI example",
   "eslintConfig": {
-    "extends": "@info.nl/eslint-config-berlin"
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    },
+    "env": {
+      "es6": true
+    }
   },
   "config": {
     "@info.nl/jsxmas": {
       "bundles": {
         "beep": {
           "require": [
-            "_app/foo",
-            "_app/bar"
+            "foo",
+            "bar"
           ]
         },
         "boop": {
           "external": [
-            "_app/foo",
-            "_app/bar"
+            "foo",
+            "bar"
           ]
         }
       },
@@ -34,11 +40,9 @@
   "scripts": {
     "prejs": "npm i",
     "js": "jsxmas",
-    "prejs:d": "npm run js",
-    "js:d": "npm run js watch"
+    "js:d": "npm run js && jsxmas watch"
   },
   "dependencies": {
-    "@info.nl/eslint-config-berlin": "^0.1.1",
     "@info.nl/jsxmas": "1.0.0",
     "domready": "^1.0.7",
     "react": "^0.13.3"

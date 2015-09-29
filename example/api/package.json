@@ -32,6 +32,7 @@
     }
   },
   "scripts": {
+    "prejs": "npm i",
     "js": "gulp"
   },
   "dependencies": {

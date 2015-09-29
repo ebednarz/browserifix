@@ -46,7 +46,6 @@ function jsxmas(options) {
             }
 
             function onRejected(error) {
-                console.error(error);
                 reject(error);
             }
 

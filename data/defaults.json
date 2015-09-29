@@ -1,9 +1,4 @@
 {
-    "babel": [
-      "app/",
-      "node_modules/_app/",
-      "source/script/"
-    ],
     "bundles": [
       "main"
     ],
