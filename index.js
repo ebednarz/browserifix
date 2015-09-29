@@ -9,7 +9,7 @@ var mkdirp = require('mkdirp');
 var packageData = require('./package');
 var vendor = require('./library/vendor');
 
-function browserifix(options) {
+function jsxmas(options) {
     var appBundleQueue = [];
     var vendorBundleQueue = [];
     var all;
@@ -106,4 +106,4 @@ function browserifix(options) {
     return promise;
 }
 
-module.exports = browserifix;
+module.exports = jsxmas;

@@ -1,13 +1,13 @@
 {
-  "name": "browserifix-cli-example",
+  "name": "@info.nl/jsxmas-cli-example",
   "version": "0.0.1",
   "private": true,
-  "description": "Browserifix CLI example",
+  "description": "@info.nl JSXmas CLI example",
   "eslintConfig": {
     "extends": "@info.nl/eslint-config-berlin"
   },
   "config": {
-    "browserifix": {
+    "@info.nl/jsxmas": {
       "bundles": {
         "beep": {
           "require": [
@@ -32,15 +32,14 @@
     }
   },
   "scripts": {
-    "js": "browserifix",
-    "prejs:dev": "npm run js:vendor",
-    "js:dev": "browserifix watch",
-    "js:vendor": "browserifix vendor",
-    "js:watch": "browserifix watch"
+    "prejs": "npm i",
+    "js": "jsxmas",
+    "prejs:d": "npm run js",
+    "js:d": "npm run js watch"
   },
   "dependencies": {
     "@info.nl/eslint-config-berlin": "^0.1.1",
-    "browserifix": "0.6.0",
+    "@info.nl/jsxmas": "1.0.0",
     "domready": "^1.0.7",
     "react": "^0.13.3"
   }

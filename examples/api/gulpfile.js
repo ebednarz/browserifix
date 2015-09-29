@@ -1,10 +1,10 @@
 'use strict';
-var browserifix = require('browserifix');
+var jsxmas = require('@info.nl/jsxmas');
 var gulp = require('gulp');
 
 // use the `done` option
 gulp.task('js-callback', function (callback) {
-    browserifix({
+    jsxmas({
         done: function () {
             callback();
         }
@@ -13,7 +13,7 @@ gulp.task('js-callback', function (callback) {
 
 // use the returned promise
 gulp.task('js-promise', ['js-callback'], function () {
-    return browserifix();
+    return jsxmas();
 });
 
 gulp.task('default', ['js-callback', 'js-promise']);

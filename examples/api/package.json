@@ -1,8 +1,8 @@
 {
-  "name": "browserifix-api-example",
+  "name": "@info.nl/jsxmas-api-example",
   "version": "0.0.1",
   "private": true,
-  "description": "Browserifix API example",
+  "description": "Info.nl JSXmas API example",
   "eslintConfig": {
     "ecmaFeatures": {
       "modules": true
@@ -12,7 +12,7 @@
     }
   },
   "config": {
-    "browserifix": {
+    "@info.nl/jsxmas": {
       "bundles": {
         "beep": {
           "require": [
@@ -35,7 +35,7 @@
     "js": "gulp"
   },
   "dependencies": {
-    "browserifix": "0.6.0",
+    "@info.nl/jsxmas": "1.0.0",
     "gulp": "^3.8.11"
   }
 }

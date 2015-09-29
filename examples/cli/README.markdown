@@ -1,4 +1,4 @@
-# Browserifix CLI example
+# Info.nl JSXmas CLI example
 
     $ npm install
 
