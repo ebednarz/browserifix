@@ -1,7 +1,8 @@
 <p align="center">
   <a href="https://info.nl/"><img 
     src="https://raw.githubusercontent.com/infonl/jsxmas/master/image/jsxmas.png"
-    style="width: 50%; height: auto;"
+    width="400"
+    height="400"
   ></a>
 </p>
 
