@@ -2,6 +2,11 @@
 
 > Info.nl browser scripting quick-start kit.
 
+<p style="text-align:center"><img
+  src="https://raw.githubusercontent.com/infonl/jsxmas/master/image/jsxmas.png"
+  style="width: 50%; height: auto;"
+  ></p>
+
 ## Installation
 
     $ npm i @info.nl/jsxmas --save-dev
