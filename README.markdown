@@ -1,3 +1,10 @@
+<p align="center">
+  <a href="https://info.nl/"><img 
+    src="https://raw.githubusercontent.com/infonl/jsxmas/master/image/jsxmas.png"
+    style="width: 50%; height: auto;"
+  ></a>
+</p>
+
 # JSXmas [![npm version][npm-image]][npm-url] [![code climate][code-climate-image]][code-climate-url]
 
 > Info.nl browser scripting quick-start kit.
