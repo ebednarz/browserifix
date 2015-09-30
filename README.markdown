@@ -4,7 +4,7 @@
 
 ## Installation
 
-    $ npm install @info.nl/jsxmas
+    $ npm i @info.nl/jsxmas --save-dev
     
 ## License
 
