@@ -55,6 +55,10 @@ plugins and `.eslintrc` files will not work in that context.
     
 ## Custom configuration
 
+Use the package name as a property in the standard 
+`package.json`'s `config` entry. 
+All configuration options are optional.
+
     {
       "config": {
         "@info.nl/jsxmas": {
@@ -67,13 +71,94 @@ plugins and `.eslintrc` files will not work in that context.
       }
     }
 
-### `{Object|Array} bundles`
+### `{Array|Object} bundles`
+
+#### Default value: 
+
+    "bundles": [
+      "main"
+    ]
+
+#### Array
+
+    "bundles": [
+      "main",
+      "special"
+    ]
+    
+#### Object
+
+When you generate multiple bundles, the object syntax gives
+you more control about what to expose and to exclude in which bundle.
+
+This corresponds to the browserify
+[require](https://github.com/substack/node-browserify#brequirefile-opts)
+and
+[external](https://github.com/substack/node-browserify#bexternalfile)
+methods.
+
+    "bundles": {
+      "main": {
+        "require": [
+          "foo"
+        ]
+      },
+      "special": {
+        "external": [
+          "foo"
+        ]
+      }
+    }
+    
+- `main.js` defines the `foo` module and exposes it
+- if `special.js` requires `foo`, it is *not* included in its bundle 
+
+#### Mixed
+
+As a convenience, you can mix the array and object syntax.
+
+    "bundles": [
+      "main",
+      "special", 
+      {
+        "more-special": {
+          "require": [
+            "foo"
+          ]
+        },
+        "super-special": {
+          "external": [
+            "foo"
+          ]
+        }
+      }
+    ]
 
 ### `{Object} vendors`
 
+Every vendor file requires all of its dependencies 
+and makes them available outside of the bundle.
+
+    "vendors": {
+        "jquery": [
+          "jquery",
+          "jquery-ui"
+        ]
+    }
+
+Vendor bundles do **not** generate source maps.
+
 ### `{string} source`
 
+#### Default value
+
+    "source": "./source/script"
+
 ### `{string} target`
+
+#### Default value
+
+    "target": "./public/script"
 
 ### `{string} map`
 
@@ -82,6 +167,8 @@ If you need to customize that, you can provide a `map` string with two
 regular expression back-references in the form `$[substring-index]`, 
 one for the base name without extension,
 and one for the extension.
+
+#### Example
 
 - generated file base name: `main.js` 
 - `map` value: `"$1-$2-map.json"`
