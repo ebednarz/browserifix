@@ -61,7 +61,7 @@ function mergeConfig(options) {
 
     config.babel = [
         /node_modules[\/\\]_app[\/\\]/,
-        sourceExpression(config.source)
+        sourceExpression(config.source || config.babel)
     ];
 
     return config;
