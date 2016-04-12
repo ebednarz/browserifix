@@ -1,0 +1,50 @@
+{
+  "name": "@info.nl/jsxmas-cli-example",
+  "version": "0.0.1",
+  "private": true,
+  "description": "@info.nl JSXmas CLI example",
+  "eslintConfig": {
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    },
+    "env": {
+      "es6": true
+    }
+  },
+  "config": {
+    "@info.nl/jsxmas": {
+      "bundles": {
+        "beep": {
+          "require": [
+            "foo",
+            "bar"
+          ]
+        },
+        "boop": {
+          "external": [
+            "foo",
+            "bar"
+          ]
+        }
+      },
+      "vendors": {
+        "vendor": [
+          "react"
+        ]
+      },
+      "source": "./source/js",
+      "target": "./public/js"
+    }
+  },
+  "scripts": {
+    "prejs": "npm i",
+    "js": "jsxmas",
+    "js:d": "npm run js && jsxmas watch"
+  },
+  "dependencies": {
+    "@info.nl/jsxmas": "1.0.0",
+    "domready": "^1.0.7",
+    "react": "^0.13.3"
+  }
+}

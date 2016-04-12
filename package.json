@@ -1,9 +1,10 @@
 {
-  "name": "browserifix",
-  "version": "0.6.0",
+  "name": "@info.nl/jsxmas",
+  "version": "1.0.3",
   "author": "Eric Bednarz <github@bednarz.nl>",
+  "contributors": [],
   "license": "MIT",
-  "description": "Browser scripting quick-start kit",
+  "description": "Info.nl browser scripting quick-start kit.",
   "keywords": [
     "babel",
     "browser",
@@ -17,20 +18,21 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:ebednarz/browserifix.git"
+    "url": "git@github.com:infonl/jsxmas.git"
   },
-  "bin": "./binary/browserifix.js",
+  "bin": {
+    "jsxmas": "./binary/jsxmas.js"
+  },
   "dependencies": {
     "async": "^0.9.0",
     "babelify": "^6.1.2",
     "browserify": "9.0.3",
-    "escape-string-regexp": "^1.0.3",
     "glob": "^4.4.1",
     "lintify": "1.1.0",
     "lodash": "^3.3.1",
     "mkdirp": "^0.5.0",
     "petty-print": "0.0.3",
-    "reverse-config": "0.0.3",
+    "reverse-config": "^0.1.0",
     "sourcemap-filename": "0.0.5",
     "uglify-js": "^2.4.23",
     "watchify": "3.2.3"

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 'use strict';
-var browserifix = require('..');
+var jsxmas = require('..');
 var argument = process.argv[2];
 
-browserifix({
+jsxmas({
     bundle: ('bundle' == argument),
     vendor: ('vendor' == argument),
     watch: ('watch' == argument)

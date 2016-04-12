@@ -1,6 +1,6 @@
 import domready from 'domready';
-import foo from '_app/foo';
-import render from '_app/render';
+import foo from 'foo';
+import render from 'render';
 
 domready(function onDomReady() {
     render();

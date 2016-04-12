@@ -16,13 +16,23 @@ function expand(array) {
     return bundles;
 }
 
+function sourceExpression(input) {
+    var expression;
+
+    if ('/' !== input.charAt(input.length)) {
+        input += '/';
+    }
+
+    expression = input
+        .replace(/^\.\//, '')
+        .replace(/\//g, '[\\/\\\\]');
+
+    return new RegExp(expression);
+}
+
 function mergeConfig(options) {
     var config = JSON.parse(JSON.stringify(defaults));
-    var moduleConfig = reverseConfig[packageName];
-
-    if (Array.isArray(moduleConfig.bundles)) {
-
-    }
+    var moduleConfig = reverseConfig.get(packageName);
 
     function setConfig(key) {
         config[key] = moduleConfig[key];
@@ -48,6 +58,11 @@ function mergeConfig(options) {
     if (Array.isArray(config.bundles)) {
         config.bundles = expand(config.bundles);
     }
+
+    config.babel = [
+        /node_modules[\/\\]_app[\/\\]/,
+        sourceExpression(config.babel || config.source)
+    ];
 
     return config;
 }
